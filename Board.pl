@@ -20,6 +20,7 @@ map(Q, R, X, Y):-
 
 /* translation rules used for printing the board */
 toChar(emptyCell, ' ').
+toChar(nullCell, ' ').
 toChar(blackPiece, 'B').
 toChar(whitePiece, 'W').
 
@@ -39,17 +40,21 @@ emptyBoard([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
-/**
-* Prints the bottom of a cell to the terminal
-*/
-printBottom:- write('\\ /').
+/* test board */
+testBoard([[whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece]]).
 
 /**
 * Prints one piece to the terminal
 * @param Piece Element of a line of the board to print (will call translation rules)
 * @param Index Set to '0' if it's the first element of a line.
 */
-printPiece(Piece, 0):- write('|'), printPiece(Piece, 1).
+printPiece(Piece, 0):-
+  write('|'),
+  toChar(Piece, C), /* char C to print */
+  write(' '),
+  write(C),
+  write(' |').
+
 printPiece(Piece, _Index):-
   toChar(Piece, C), /* char C to print */
   write(' '),
@@ -60,25 +65,72 @@ printPiece(Piece, _Index):-
 /**
 * Prints one line of the board (a list) to the terminal
 * @param [Piece|Tail] List to print
-* @param LineIndex Index of the current line being iterated (range: [0, board.height])
-* @param ElemIndex Index of the current line element being iterated (range: [0, board.width])
-* @param Type Either one of these values: top, middle, bottom.
+* @param LineIndex Index of the current line being iterated
+* @param ElemIndex Index of the current line element being iterated. ALWAYS set to 0 when called the 1st time.
 */
-printLine([Piece|Tail], LineIndex, ElemIndex, middle):-
-  boardWidth(Width),          /* get board width */
-  Index > -1, Index < Width,  /* while (i >= 0 && i < board.height) */
-  printPiece(Piece, Index),   /* print char */
-  NewIndex is Index + 1,      /* i++ */
-  printLine(Tail, NewIndex).  /* recursive call */
+printLineMid([], _LineIndex, _ElemIndex). /* base case */
+printLineMid([Piece|Tail], LineIndex, ElemIndex):-
+  boardWidth(Width),                        /* get board width */
+  ElemIndex > -1, ElemIndex < Width,        /* while (i >= 0 && i < board.width) */
+  printPiece(Piece, ElemIndex),             /* print char */
+  NewElemIndex is ElemIndex + 1,            /* i++ */
+  printLineMid(Tail, LineIndex, NewElemIndex). /* recursive call */
+
+/**
+* Prints the bottom of a line of the board to the terminal
+* @param LineIndex Index of the current line being iterated
+* @param ElemIndex Index of the current line element being iterated. ALWAYS set to 0 when called the 1st time.
+*/
+printLineBot(0, ElemIndex):-
+  boardWidth(Width),
+  ElemIndex =:= Width.
+
+printLineBot(0, ElemIndex):-
+  boardWidth(Width),                        /* get board width */
+  ElemIndex > -1, ElemIndex < Width,        /* while (i >= 0 && i < board.width) */
+  write(' \\ /'),
+  NewElemIndex is ElemIndex + 1,
+  printLineBot(0, NewElemIndex).
+
+/**
+* Prints the top of a line of the board to the terminal
+* @param LineIndex Index of the current line being iterated
+* @param ElemIndex Index of the current line element being iterated. ALWAYS set to 0 when called the 1st time.
+*/
+printLineTop(0, ElemIndex):-
+  boardWidth(Width),
+  ElemIndex =:= Width.
+
+printLineTop(0, ElemIndex):-
+  boardWidth(Width),                        /* get board width */
+  ElemIndex > -1, ElemIndex < Width,        /* while (i >= 0 && i < board.width) */
+  write(' / \\'),
+  NewElemIndex is ElemIndex + 1,
+  printLineTop(0, NewElemIndex).
+
+/**
+* Interface for printing a line of the board to the terminal
+* @param Line Line (list) to print
+* @param LineIndex Index of the line to print
+*/
+printLine(Line, LineIndex):-
+  printLineTop(0, 0), nl,
+  printLineMid(Line, LineIndex, 0), nl,
+  printLineBot(0, 0).
 
 /**
 * Prints Board to the terminal
-* @param Line|Tail] Board to print - 2D Array (list of lists) representing the game board
+* @param [Line|Tail] Board to print - 2D Array (list of lists) representing the game board
 * @param Index Index of the current line being iterated (range: [0, board.height])
 */
+printBoard([], _Index). /* base case */
 printBoard([Line|Tail], Index):-
-  boardHeight(Height),        /* get board height */
-  Index > -1, Index < Height,  /* while (i >= 0 && i < board.height) */
-  printLine(Line, Index, middle),   /* print char */
-  NewIndex is Index + 1,      /* i++ */
-  printLine(Tail, NewIndex).  /* recursive call */
+  boardHeight(Height),              /* get board height */
+  Index > -1, Index < Height,       /* while (i >= 0 && i < board.height) */
+  printLine(Line, Index), nl           /* print line */
+  NewIndex is Index + 1,            /* i++ */
+  printBoard(Tail, NewIndex).       /* recursive call */
+
+printBoard:-
+  emptyBoard(Board),
+  printBoard(Board, 0).
