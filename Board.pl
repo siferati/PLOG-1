@@ -42,7 +42,7 @@ emptyBoard([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
-/* empty board */
+/* final board (example of game over)*/
 finalBoard([
 [blackPiece, blackPiece, blackPiece, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
@@ -52,6 +52,18 @@ finalBoard([
 [blackPiece, blackPiece, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
 [emptyCell, emptyCell, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
+
+/* on-going board (example of an on-going game) */
+gameBoard([
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
+[emptyCell, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, whitePiece, emptyCell, blackPiece, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, blackPiece, whitePiece, whitePiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, blackPiece, emptyCell, emptyCell, emptyCell],
+[emptyCell, emptyCell, whitePiece, blackPiece, blackPiece, emptyCell, emptyCell, emptyCell, nullCell],
+[emptyCell, whitePiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
 /* test board */
@@ -202,11 +214,11 @@ printLineTop(LineIndex, ElemIndex):-
 
 /* print first line */
 printLine(Line, 0):-
-  printNullCells(0, 0),                   /* print left side null cells */
+  printNullCells(0, 0),                  /* print left side null cells */
   printLineTop(0, 0), nl,                 /* print top */
   printNullCells(0, 0),                   /* print left side null cells */
   printLineMid(Line, 0, 0), nl,           /* print middle of line */
-  printNullCells(0, 2),                   /* print left side null cells */
+  printNullCells(0, 2),                   /* print left side null cells (offset by 2 */
   offset(0, '/'),                         /* print top of 1st element of next line */
   printLineBot(0, 0),                     /* print bottom of line */
   offset(0, '\\').                        /* print top of last element of next line */
@@ -231,7 +243,7 @@ printLine(Line, LineIndex):-
   printLineBot(LineIndex, 0),             /* print bottom of line */
   offset(LineIndex, '\\').                /* print top of last element of next line */
 
-/* print line index 4 */
+/* print line index 4, cause reasons */
 printLine(Line, 4):-
   printNullCells(4, 0),          /* print left side null cells */
   printLineMid(Line, 4, 0), nl,  /* print middle of line */
@@ -243,7 +255,7 @@ printLine(Line, LineIndex):-
   even(LineIndex),                       /* check it's an even line */
   printNullCells(LineIndex, 0),          /* print left side null cells */
   printLineMid(Line, LineIndex, 0), nl,  /* print middle of line */
-  printNullCells(LineIndex, 2),          /* print left side null cells (offset by 2) */
+  printNullCells(LineIndex, 2),         /* print left side null cells (offset by 2) */
   offset(LineIndex, '/'),                /* print top of 1st element of next line (default!) */
   printLineBot(LineIndex, 0),            /* print bottom of line */
   offset(LineIndex, '\\').               /* print top of last element of next line */
@@ -284,4 +296,11 @@ printFinalBoard:-
 */
 printTestBoard:-
   testBoard(Board),
+  printBoard(Board, 0).
+
+/**
+* Interface for printing the game board
+*/
+printGameBoard:-
+  gameBoard(Board),
   printBoard(Board, 0).
