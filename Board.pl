@@ -3,45 +3,7 @@ Board is a 2D array (9x9!) (list of lists) that should ALWAYS be access like thi
 board[Y][X]
 */
 
-/* utilities */
-
-/* if number is even */
-even(N):-
-  0 is N mod 2.
-
-/* abs */
-abs(X, Y) :- X < 0, Y is -X.
-abs(X, X) :- X > -1.
-
-/* print N spaces to the terminal */
-printSpace(0).
-printSpace(N):-
-  N > 0,
-  write(' '),
-  NewN is N - 1,
-  printSpace(NewN).
-
-/* Interface for printing nullCells to terminal */
-printNullCells(LineIndex):-
-  numberCells(LineIndex, NCells),     /* get number of cells to draw */
-  boardWidth(Width),                  /* get board width */
-  N is Width - NCells,                /* number of nullCells */
-  N2 is div(N, 2),                    /* number of nullCells on the left side */
-  N3 is N2*4,                         /* number of sapces left side nullCells are worth */
-  printSpace(N3).                     /* print spaces to the terminal */
-
-/* how many cells to draw */
-numberCells(LineIndex, X):-
-  boardRadius(Radius),
-  LineIndex < Radius + 1,
-  boardWidth(Width),
-  X is Width - Radius + LineIndex.
-
-numberCells(LineIndex, X):-
-  boardRadius(Radius),
-  LineIndex > Radius,
-  boardWidth(Width),
-  X is Width - LineIndex + Radius.
+:- include('utilities.pl').
 
 /* Board radius N = max(abs(x), abs(z)) = 4  */
 boardRadius(4).
@@ -80,6 +42,18 @@ emptyBoard([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
+/* empty board */
+finalBoard([
+[blackPiece, blackPiece, blackPiece, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[emptyCell, blackPiece, emptyCell, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
+[blackPiece, blackPiece, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[emptyCell, emptyCell, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
+
 /* test board */
 testBoard([
 [whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, nullCell, nullCell, nullCell, nullCell],
@@ -93,18 +67,74 @@ testBoard([
 [whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, nullCell, nullCell, nullCell, nullCell]]).
 
 /**
+* Interface for printing nullCells to terminal
+* @param LineIndex Index of lines
+* @param Offset Value to subtract from the final N value
+*/
+printNullCells(LineIndex, Offset):-
+  numberCells(LineIndex, NCells),     /* get number of cells to draw */
+  boardWidth(Width),                  /* get board width */
+  N is Width - NCells,                /* number of nullCells */
+  N2 is div(N, 2),                    /* number of nullCells on the left side */
+  N3 is N2*4,                         /* number of sapces left side nullCells are worth */
+  N4 is N3 - Offset,                  /* offset N4 */
+  printSpace(N4).                     /* print spaces to the terminal */
+
+/**
+* How many cells to draw on given line
+* @param LineIndex Index of the current line
+* @param X Storage for the number of cells to draw
+*/
+
+/* If above (or at) the equator */
+numberCells(LineIndex, X):-
+  boardRadius(Radius),
+  LineIndex < Radius + 1,
+  boardWidth(Width),
+  X is Width - Radius + LineIndex.
+
+/* If below the equator */
+numberCells(LineIndex, X):-
+  boardRadius(Radius),
+  LineIndex > Radius,
+  boardWidth(Width),
+  X is Width - LineIndex + Radius.
+
+/**
 * Prints one piece to the terminal
 * @param Piece Element of a line of the board to print (will call translation rules)
 * @param Index Set to '0' if it's the first element of a line.
 */
+
+/* If it's the first element of a line */
 printPiece(Piece, 0):-
   write('|'),
   printPiece(Piece, 1).
 
+/* If it's not the first element of a line */
 printPiece(Piece, _Index):-
-  toChar(Piece, C), /* char C to print */
+  toChar(Piece, C),         /* char C to print */
   write(C).
 
+/**
+* Offsets the given line by either '  ', '/' or '\\'
+* @param LineIndex Line of offset
+* @param Char Char to offset with
+*/
+
+/* If above the equator */
+offset(LineIndex, Char):-
+  boardHeight(Height),      /* get board height */
+  Equa is div(Height, 2),   /* get the equator */
+  LineIndex < Equa,         /* make sure it's above the equator */
+  write(' '), write(Char).  /* write either '/' or '\\' */
+
+/* If below (or at) the equator */
+offset(LineIndex, _Char):-
+  boardHeight(Height),      /* get board height */
+  Equa is div(Height, 2),   /* get the equator */
+  LineIndex > Equa - 1,     /* make sure it's below (or at) the equator */
+  write('  ').              /* write spaces */
 
 /**
 * Prints one line of the board (a list) to the terminal
@@ -118,11 +148,12 @@ printLineMid(_List, LineIndex, ElemIndex):-
   numberCells(LineIndex, NCells),           /* get number of cells to draw */
   ElemIndex =:= NCells.                     /* stop if all cells have been drawn */
 
+/* main loop */
 printLineMid([Piece|Tail], LineIndex, ElemIndex):-
-  numberCells(LineIndex, NCells),           /* get number of cells to draw */
-  ElemIndex > -1, ElemIndex < NCells,       /* while (i >= 0 && i <= nCells) */
-  printPiece(Piece, ElemIndex),             /* print char */
-  NewElemIndex is ElemIndex + 1,            /* i++ */
+  numberCells(LineIndex, NCells),              /* get number of cells to draw */
+  ElemIndex > -1, ElemIndex < NCells,          /* while (i >= 0 && i <= nCells) */
+  printPiece(Piece, ElemIndex),                /* print char */
+  NewElemIndex is ElemIndex + 1,               /* i++ */
   printLineMid(Tail, LineIndex, NewElemIndex). /* recursive call */
 
 /**
@@ -136,7 +167,7 @@ printLineBot(LineIndex, ElemIndex):-
   numberCells(LineIndex, NCells),           /* get number of cells to draw */
   ElemIndex =:= NCells.                     /* stop if all cells have been drawn */
 
-/* print bottom of line */
+/* main loop */
 printLineBot(LineIndex, ElemIndex):-
   numberCells(LineIndex, NCells),           /* get number of cells to draw */
   ElemIndex > -1, ElemIndex < NCells,       /* while (i >= 0 && i <= nCells) */
@@ -155,7 +186,7 @@ printLineTop(LineIndex, ElemIndex):-
   numberCells(LineIndex, NCells),           /* get number of cells to draw */
   ElemIndex =:= NCells.                     /* stop if all cells have been drawn */
 
-/* print top of line */
+/* main loop */
 printLineTop(LineIndex, ElemIndex):-
   numberCells(LineIndex, NCells),           /* get number of cells to draw */
   ElemIndex > -1, ElemIndex < NCells,       /* while (i >= 0 && i <= nCells) */
@@ -171,53 +202,51 @@ printLineTop(LineIndex, ElemIndex):-
 
 /* print first line */
 printLine(Line, 0):-
-  write(0),
-  printNullCells(0),                      /* print left side null cells */
+  printNullCells(0, 0),                   /* print left side null cells */
   printLineTop(0, 0), nl,                 /* print top */
-  write(0),
-  printNullCells(0),                      /* print left side null cells */
+  printNullCells(0, 0),                   /* print left side null cells */
   printLineMid(Line, 0, 0), nl,           /* print middle of line */
-  write(0),
-  printNullCells(0),                      /* print left side null cells */
-  printLineBot(0, 0).                     /* print bottom of line */
-  /*write(' \\').                          /* print top of last element of next line */
+  printNullCells(0, 2),                   /* print left side null cells */
+  offset(0, '/'),                         /* print top of 1st element of next line */
+  printLineBot(0, 0),                     /* print bottom of line */
+  offset(0, '\\').                        /* print top of last element of next line */
 
 /* print last line */
 printLine(Line, LineIndex):-
   boardHeight(Height),                    /* get height */
   LineIndex =:= Height - 1,               /* make sure it's the last line */
-  write(LineIndex),
-  printNullCells(LineIndex),              /* print left side null cells */
+  printNullCells(LineIndex, 0),           /* print left side null cells */
   printLineMid(Line, LineIndex, 0), nl,   /* print middle of line */
-  write(LineIndex),
-  printNullCells(LineIndex),              /* print left side null cells */
-  printLineBot(LineIndex, 0).                     /* print bottom of line */
+  printNullCells(LineIndex, 0),           /* print left side null cells */
+  printLineBot(LineIndex, 0).             /* print bottom of line */
 
 /* print odd lines */
 printLine(Line, LineIndex):-
   \+even(LineIndex),                      /* check it's an odd line */
-  write(LineIndex),
-  printNullCells(LineIndex),              /* print left side null cells */
+  printNullCells(LineIndex, 0),           /* print left side null cells */
   write('  '),                            /* offset */
   printLineMid(Line, LineIndex, 0), nl,   /* print middle of line */
-  write(LineIndex),
-  printNullCells(LineIndex),              /* print left side null cells */
-  /*write(' /'),                            /* print top of 1st element of next line (default!) */
-  write('  '),
-  printLineBot(LineIndex, 0).             /* print bottom of line */
+  printNullCells(LineIndex, 0),           /* print left side null cells */
+  offset(LineIndex, '/'),                 /* print top of 1st element of next line (default!) */
+  printLineBot(LineIndex, 0),             /* print bottom of line */
+  offset(LineIndex, '\\').                /* print top of last element of next line */
 
-/* ofset(LineIndex):- se tiver em cima write / e \\ em vez de '  ', em baixo excrever '  ' */
+/* print line index 4 */
+printLine(Line, 4):-
+  printNullCells(4, 0),          /* print left side null cells */
+  printLineMid(Line, 4, 0), nl,  /* print middle of line */
+  printNullCells(4, 2),          /* print left side null cells (offset by 2) */
+  printLineBot(4, 0).            /* print bottom of line */
 
 /* print even lines */
 printLine(Line, LineIndex):-
-  even(LineIndex),                        /* check it's an even line */
-  write(LineIndex),
-  printNullCells(LineIndex),              /* print left side null cells */
-  printLineMid(Line, LineIndex, 0), nl,   /* print middle of line */
-  write(LineIndex),
-  printNullCells(LineIndex),              /* print left side null cells */
-  printLineBot(LineIndex, 0).             /* print bottom of line */
-  /*write(' \\').                           /* print top of last element of next line */
+  even(LineIndex),                       /* check it's an even line */
+  printNullCells(LineIndex, 0),          /* print left side null cells */
+  printLineMid(Line, LineIndex, 0), nl,  /* print middle of line */
+  printNullCells(LineIndex, 2),          /* print left side null cells (offset by 2) */
+  offset(LineIndex, '/'),                /* print top of 1st element of next line (default!) */
+  printLineBot(LineIndex, 0),            /* print bottom of line */
+  offset(LineIndex, '\\').               /* print top of last element of next line */
 
 /**
 * Prints Board to the terminal
@@ -228,7 +257,7 @@ printLine(Line, LineIndex):-
 /* base case | stop condition */
 printBoard([], _Index).
 
-/* print board */
+/* main loop */
 printBoard([Line|Tail], Index):-
   boardHeight(Height),              /* get board height */
   Index > -1, Index < Height,       /* while (i >= 0 && i < board.height) */
@@ -236,12 +265,23 @@ printBoard([Line|Tail], Index):-
   NewIndex is Index + 1,            /* i++ */
   printBoard(Tail, NewIndex).       /* recursive call */
 
-/* interface for print board */
-printBoard:-
+/**
+* Interface for printing an empty board
+*/
+printEmptyBoard:-
   emptyBoard(Board),
   printBoard(Board, 0).
 
-/* print test board */
+/**
+* Interface for printing the final board
+*/
+printFinalBoard:-
+  finalBoard(Board),
+  printBoard(Board, 0).
+
+/**
+* Interface for printing the test board
+*/
 printTestBoard:-
   testBoard(Board),
   printBoard(Board, 0).
