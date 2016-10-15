@@ -179,8 +179,8 @@ printLine(Line, 0):-
   printLineMid(Line, 0, 0), nl,           /* print middle of line */
   write(0),
   printNullCells(0),                      /* print left side null cells */
-  printLineBot(0, 0),                     /* print bottom of line */
-  write(' \\').                           /* print top of last element of next line */
+  printLineBot(0, 0).                     /* print bottom of line */
+  /*write(' \\').                          /* print top of last element of next line */
 
 /* print last line */
 printLine(Line, LineIndex):-
@@ -202,9 +202,11 @@ printLine(Line, LineIndex):-
   printLineMid(Line, LineIndex, 0), nl,   /* print middle of line */
   write(LineIndex),
   printNullCells(LineIndex),              /* print left side null cells */
-  write(' /'),                            /* print top of 1st element of next line */
-  printLineBot(LineIndex, 0),             /* print bottom of line */
-  write(' \\').                           /* print top of last element of next line */
+  /*write(' /'),                            /* print top of 1st element of next line (default!) */
+  write('  '),
+  printLineBot(LineIndex, 0).             /* print bottom of line */
+
+/* ofset(LineIndex):- se tiver em cima write / e \\ em vez de '  ', em baixo excrever '  ' */
 
 /* print even lines */
 printLine(Line, LineIndex):-
@@ -214,9 +216,8 @@ printLine(Line, LineIndex):-
   printLineMid(Line, LineIndex, 0), nl,   /* print middle of line */
   write(LineIndex),
   printNullCells(LineIndex),              /* print left side null cells */
-  write(' /'),                            /* print top of 1st element of next line */
-  printLineBot(LineIndex, 0),             /* print bottom of line */
-  write(' \\').                           /* print top of last element of next line */
+  printLineBot(LineIndex, 0).             /* print bottom of line */
+  /*write(' \\').                           /* print top of last element of next line */
 
 /**
 * Prints Board to the terminal
