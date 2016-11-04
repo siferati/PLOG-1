@@ -278,6 +278,71 @@ printBoard([Line|Tail], Index):-
   printBoard(Tail, NewIndex).       /* recursive call */
 
 /**
+* Interface for printing any board
+*/
+printBoard(Board):-
+  printBoard(Board, 0).
+
+/**
+* Places a piece on the board
+* @param Player Player 1 or 2
+* @param Board Board
+* @param Q
+* @param R
+*/
+placePiece(Player, Board, Q, R):-
+  map(Q, R, X, Y),                        /* get mapping for the coordinates */
+  boardWidth(Width), boardHeight(Height), /* get board width and height */
+  X >= 0, X < Width,                      /* make sure X is valid */
+  Y >= 0, Y < Height,                     /* make sure Y us valid */
+  placeElem(1, 2, 3, 4, 5, 6, 7).
+
+/**
+* Aux functions for placeElem
+*/
+
+/* if (CountX == X) */
+ifCountXEqualsX(Elem, [H|T], [NewH|NewT], X, Y, CountX, CountY):-
+  CountX =:= X, !.
+
+/* else */
+ifCountXEqualsX(Elem, [H|T], [NewH|NewT], X, Y, CountX, CountY):-
+  CountX =\= X, !,
+  NewCountX is CountX + 1,
+  ifCountXEqualsX(Elem, T, NewNew)
+
+/* if (CountY == Y) */
+ifCountYEqualsY(Elem, [H|T], NewBoard, X, Y, CountX, CountY):-
+  CountY =:= Y.
+
+/* else */
+ifCountYEqualsY(Elem, [H|T], NewBoard, X, Y, CountX, CountY):-
+  CountY =\= Y, !,
+  NewCountY is CountY + 1,
+  placeElem(Elem, T, [NewBoard|H], X, Y, CountX, NewCountY).
+
+/**
+* @param Elem Element to place
+* @param [H|T] Board
+* @param NewBoard (empty list at start!)
+* @param X coordinate of placed element
+* @param Y coordinate of placed element
+* @param CountX iteration counter
+* @param CountY iteration counter
+*/
+placeElem(Elem, [H|T], NewBoard, X, Y, CountX, CountY):-
+  boardWidth(Width), boardHeight(Height),                          /* get board width and height */
+  CountX >= 0, CountX < Width,
+  CountY >= 0, CountY < Height,
+  ifCountYEqualsY(Elem, [H|T], NewBoard, X, Y, CountX, CountY), !, /* if (countY == y) */
+  NewNewBoard is [NewBoard|H],                                     /* this is retarded but hopefully will work :D */
+  ifCountXEqualsX(Elem, H, H, X, Y, CountX, CountY), !, /* if (countX == X) */
+
+
+
+
+
+/**
 * Interface for printing an empty board
 */
 printEmptyBoard:-

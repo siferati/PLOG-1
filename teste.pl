@@ -20,3 +20,5 @@ teste2:-
   write(' / \\ /'), nl,
   write('| 2 |'), nl,
   write(' \\ /').
+
+  :- include('utilities.pl').

@@ -26,3 +26,14 @@ printSpace(N):-
   write(' '),
   NewN is N - 1,
   printSpace(NewN).
+
+/**
+* Replace an element in a list
+*/
+replace([_|T], 0, Elem, [Elem|T]).
+replace([H|T], X, Elem, [H|R]):- X > -1, NewX is X-1, replace(T, NewX, Elem, R), !.
+replace(L, _, _, L).
+
+replace([H|T], X, 0, Elem, [NewH|T]):- replace(H, X, Elem, NewH).
+replace([H|T], X, Y, Elem, [H|R]):- Y > -1, NewY is Y-1, replace(T, X, NewY, Elem, R), !.
+replace(L, _, _, _, L).
