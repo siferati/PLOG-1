@@ -3,7 +3,7 @@ Board is a 2D array (9x9!) (list of lists) that should ALWAYS be access like thi
 board[Y][X]
 */
 
-:- include('utilities.pl').
+:- ensure_loaded('utilities.pl').
 
 /* Board radius N = max(abs(x), abs(z)) = 4  */
 boardRadius(4).
@@ -19,6 +19,10 @@ map(Q, R, X, Y):-
   boardRadius(N), /* get board radius and store it in variable N */
   Y is R + N,
   X is Q + N + min(0, R).
+
+/* translation rules between players and their respective pieces */
+toPiece(player1, whitePiece).
+toPiece(player2, blackPiece).
 
 /* translation rules used for printing the board */
 toChar(emptyCell, '   |').
@@ -283,63 +287,41 @@ printBoard([Line|Tail], Index):-
 printBoard(Board):-
   printBoard(Board, 0).
 
-/**
-* Places a piece on the board
-* @param Player Player 1 or 2
-* @param Board Board
-* @param Q
-* @param R
+/** TODO succed if game is running, fail otherwise
+* Checks if the game is finished.
+* @param Board Game Board
 */
-placePiece(Player, Board, Q, R):-
-  map(Q, R, X, Y),                        /* get mapping for the coordinates */
+gameIsRunning(_Board).
+
+/** TODO complete game rules (check nullCell, etc)
+* Game Rules
+* @param Piece whitePiece or blackPiece
+* @param Board Game Board
+* @param X Array Coordinate to insert Piece
+* @param Y Array Coordinate to insert Piece
+*/
+validatePlay(_Piece, _Board, X, Y):-
   boardWidth(Width), boardHeight(Height), /* get board width and height */
   X >= 0, X < Width,                      /* make sure X is valid */
-  Y >= 0, Y < Height,                     /* make sure Y us valid */
-  placeElem(1, 2, 3, 4, 5, 6, 7).
+  Y >= 0, Y < Height.                     /* make sure Y is valid */
 
 /**
-* Aux functions for placeElem
+* Places a piece on the board
+* @param Player player1 or player2
+* @param Board Game Board
+* @param Q Hex Coordinate to insert Piece
+* @param R Hex Coordinate to insert Piece
+* @param NewBoard GameBoard after piece is played
 */
+placePiece(Player, Board, Q, R, NewBoard):-
+  map(Q, R, X, Y),                        /* get mapping for the coordinates */
+  toPiece(Player, Piece),                 /* get player's piece (whitePiece or blackPiece) */
+  validatePlay(Piece, Board, X, Y), !,    /* make sure it's a valid play */
+  replace(Board, X, Y, Piece, NewBoard).  /* insert piece on the board */
 
-/* if (CountX == X) */
-ifCountXEqualsX(Elem, [H|T], [NewH|NewT], X, Y, CountX, CountY):-
-  CountX =:= X, !.
-
-/* else */
-ifCountXEqualsX(Elem, [H|T], [NewH|NewT], X, Y, CountX, CountY):-
-  CountX =\= X, !,
-  NewCountX is CountX + 1,
-  ifCountXEqualsX(Elem, T, NewNew)
-
-/* if (CountY == Y) */
-ifCountYEqualsY(Elem, [H|T], NewBoard, X, Y, CountX, CountY):-
-  CountY =:= Y.
-
-/* else */
-ifCountYEqualsY(Elem, [H|T], NewBoard, X, Y, CountX, CountY):-
-  CountY =\= Y, !,
-  NewCountY is CountY + 1,
-  placeElem(Elem, T, [NewBoard|H], X, Y, CountX, NewCountY).
-
-/**
-* @param Elem Element to place
-* @param [H|T] Board
-* @param NewBoard (empty list at start!)
-* @param X coordinate of placed element
-* @param Y coordinate of placed element
-* @param CountX iteration counter
-* @param CountY iteration counter
-*/
-placeElem(Elem, [H|T], NewBoard, X, Y, CountX, CountY):-
-  boardWidth(Width), boardHeight(Height),                          /* get board width and height */
-  CountX >= 0, CountX < Width,
-  CountY >= 0, CountY < Height,
-  ifCountYEqualsY(Elem, [H|T], NewBoard, X, Y, CountX, CountY), !, /* if (countY == y) */
-  NewNewBoard is [NewBoard|H],                                     /* this is retarded but hopefully will work :D */
-  ifCountXEqualsX(Elem, H, H, X, Y, CountX, CountY), !, /* if (countX == X) */
-
-
-
+/* In case the play is invalid (validatePlay failed) */
+placePiece(_, _, _, _):-
+  write('Invalid play!\n').
 
 
 /**
