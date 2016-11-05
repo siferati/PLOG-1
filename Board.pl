@@ -285,6 +285,7 @@ printBoard([Line|Tail], Index):-
 * Interface for printing any board
 */
 printBoard(Board):-
+  nl,
   printBoard(Board, 0).
 
 /** TODO succed if game is running, fail otherwise
