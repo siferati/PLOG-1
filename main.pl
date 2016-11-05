@@ -1,6 +1,6 @@
 /* Game Loop */
 
-/* includes */
+/* includes TODO include vs ensure_loaded */
 :- ensure_loaded('utilities.pl').
 :- ensure_loaded('Board.pl').
 
