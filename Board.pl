@@ -294,17 +294,20 @@ printBoard(Board):-
 */
 gameIsRunning(_Board).
 
-/** TODO complete game rules (check nullCell, etc)
+/** TODO game rules | BoardCell =:= emptyCell -why error?
 * Game Rules
 * @param Piece whitePiece or blackPiece
 * @param Board Game Board
 * @param X Array Coordinate to insert Piece
 * @param Y Array Coordinate to insert Piece
 */
-validatePlay(_Piece, _Board, X, Y):-
+validatePlay(emptyCell).                  /* can only place a piece in an empty cell */
+validatePlay(_Piece, Board, X, Y):-
   boardWidth(Width), boardHeight(Height), /* get board width and height */
   X >= 0, X < Width,                      /* make sure X is valid */
-  Y >= 0, Y < Height.                     /* make sure Y is valid */
+  Y >= 0, Y < Height,                     /* make sure Y is valid */
+  find(Board, X, Y, BoardCell),!,         /* get board cell on that position */
+  validatePlay(BoardCell).                /* can only place a piece in an empty cell */
 
 /**
 * Places a piece on the board
@@ -313,16 +316,16 @@ validatePlay(_Piece, _Board, X, Y):-
 * @param Q Hex Coordinate to insert Piece
 * @param R Hex Coordinate to insert Piece
 * @param NewBoard GameBoard after piece is played
+* @param Log Error log
 */
-placePiece(Player, Board, Q, R, NewBoard):-
+placePiece(Player, Board, Q, R, NewBoard, none):-
   map(Q, R, X, Y),                        /* get mapping for the coordinates */
   toPiece(Player, Piece),                 /* get player's piece (whitePiece or blackPiece) */
   validatePlay(Piece, Board, X, Y), !,    /* make sure it's a valid play */
   replace(Board, X, Y, Piece, NewBoard).  /* insert piece on the board */
 
-/* In case the play is invalid (validatePlay failed) */
-placePiece(_, _, _, _):-
-  write('Invalid play!\n').
+/* In case the play is invalid (validatePlay failed), NewBoard = Board */
+placePiece(_, Board, _, _, Board, invalidPlay).
 
 
 /**
