@@ -8,6 +8,9 @@ board[Y][X]
 /* Board radius N = max(abs(x), abs(z)) = 4  */
 boardRadius(4).
 
+/* Number of pieces in a row required to win the game */
+maxPiecesInRow(5).
+
 /**
 * Hexagonal to array coordinates mapping: array[R + N][Q + N + min(0, R)], N = board radius
 * @param Q Hexagonal coordinate (SW - NE)
@@ -19,6 +22,26 @@ map(Q, R, X, Y):-
   boardRadius(N), /* get board radius and store it in variable N */
   Y is R + N,
   X is Q + N + min(0, R).
+
+  /**
+  * Array to hexagonal coordinates mapping: array[R + N][Q + N + min(0, R)], N = board radius
+  * @param Q Hexagonal coordinate (SW - NE)
+  * @param R Hexagonal coordinate (N - S)
+  * @param X Array coordinate (columns)
+  * @param Y Array coordinate (rows)
+  */
+reverseMap(Q, R, X, Y):-
+  boardRadius(N), /* get board radius and store it in variable N */
+  R is Y - N,
+  Q is X - N - min(0, R).
+
+/* game pieces */
+piece(whitePiece).
+piece(blackPiece).
+
+/* players */
+player(player1).
+player(player2).
 
 /* translation rules between players and their respective pieces */
 toPiece(player1, whitePiece).
@@ -288,11 +311,75 @@ printBoard(Board):-
   nl,
   printBoard(Board, 0).
 
-/** TODO succed if game is running, fail otherwise
+/**
+* Get one of the adjacent pieces of a piece
+* @param QPiece Hexagonal coordinate of the piece
+* @param RPiece Hexagonal coordinate of the piece
+* @param QAdj returns hexagonal coordinate of the next cell to compare
+* @param RAdj returns hexagonal coordinate of the next cell to compare
+*/
+getAdjacent(QPiece, RPiece, QPiece, RAdj):- RAdj is RPiece - 1.
+getAdjacent(QPiece, RPiece, QPiece, RAdj):- RAdj is RPiece + 1.
+getAdjacent(QPiece, RPiece, QAdj, RPiece):- QAdj is QPiece - 1.
+getAdjacent(QPiece, RPiece, QAdj, RAdj):- QAdj is QPiece - 1, RAdj is RPiece + 1.
+getAdjacent(QPiece, RPiece, QAdj, RPiece):- QAdj is QPiece + 1.
+getAdjacent(QPiece, RPiece, QAdj, RAdj):- QAdj is QPiece + 1, RAdj is RPiece - 1.
+
+/**
+* Checks if there are N pieces of the same color in a row.
+* @param Board Game Board
+* @param XPiece Array Coordinate of piece
+* @param YPiece Array Coordinate of piece
+* @param XComp Array Coordinate of comparing cell
+* @param YComp Array Coordinate of comparing cell
+* @param N number of pieces of the same color in a row found until now
+*/
+checkNInRow(_, _, _, 0).                          /* stop condition */
+checkNInRow(Board, XPiece, YPiece, N):-
+  N > 0,                                          /* make sure N is valid */
+  boardWidth(Width), boardHeight(Height),         /* get board width and height */
+  XPiece >= 0, XPiece < Width,                    /* make sure X is valid */
+  YPiece >= 0, YPiece < Height,                   /* make sure Y is valid */
+  find(Board, XPiece, YPiece, Piece),             /* get piece */
+  piece(Piece),                                   /* check if it's not empty or null cell */
+  reverseMap(QPiece, RPiece, XPiece, YPiece),     /* get hexagonal coordinates of Piece */
+  !, getAdjacent(QPiece, RPiece, QAdj, RAdj),     /* get an adjacent piece */
+  map(QAdj, RAdj, XAdj, YAdj),                    /* get array coordinates of the adjacent piece */
+  find(Board, XAdj, YAdj, Adj),                   /* get adjacent cell */
+  piece(Adj),                                     /* check if it's not empty or null cell */
+  Piece =:= Adj,                                  /* check if both pieces are the same color */
+  NewN is N - 1,                                  /* prepare next ite */
+  checkNInRow(Board, XAdj, YAdj, NewN).           /* loop */
+
+/** TODO succed if game is running, fail otherwise.
 * Checks if the game is finished.
 * @param Board Game Board
+* @param IteX Iterator on X (starts as board.width)
+* @param IteY Iterator on Y (starts as board.height)
+* @param N Number of pieces in a row required to win
 */
-gameIsRunning(_Board).
+gameIsRunning(_, 0, 0, _).                  /* stop condition */
+
+gameIsRunning(Board, 0, IteY, N):-          /* once IteX is 0, we need to "rewind" it, and move to next IteY */
+  IteY > 0,                                 /* make sure IteY is valid */
+  boardWidth(Width),                        /* get board width */
+  NewIteY is IteY - 1,                      /* prepare next ite */
+  gameIsRunning(Board, Width, NewIteY, N).  /* loop */
+
+gameIsRunning(Board, IteX, IteY, N):-       /* main loop */
+  IteX > 0, IteY > 0,                       /* make sure IteX and IteY are valid */
+  \+ checkNInRow(Board, IteX, IteY, N),     /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
+  NewIteX is IteX - 1,                      /* prepare next ite */
+  gameIsRunning(Board, NewIteX, IteY, N).   /* loop */
+
+/**
+* Interface for gameIsRunning.
+* @param Board Game Board
+*/
+gameIsRunning(Board):-
+  maxPiecesInRow(N),                        /* get number of pieces in a row required to win */
+  boardWidth(Width), boardHeight(Height),   /* get board width and height */
+  gameIsRunning(Board, Width, Height, N).   /* start iterating */
 
 /** TODO game rules | BoardCell =:= emptyCell -why error?
 * Game Rules

@@ -43,6 +43,11 @@ processInput(Player, Q, R):-
   write('Q: '), read(Q),
   write('R: '), read(R).
 
+/** TODO game over screen
+* Prints the game over screen to the terminal
+*/
+printGameOver.
+
 /*
 while (gameIsRunning)
 {
@@ -52,13 +57,14 @@ while (gameIsRunning)
 }
 */
 
-/** TODO end game screen | repeat vs recursive call | Use modules? nth0 (list)
+/** TODO repeat vs recursive call | Use modules? nth0 (list) | ifs? -> ;
 * @param Player Current player
 * @param Board Game Board
 */
 game(Player, Board):-
+  !,                                                  /* if game fails, it's game over, it shouldn't redo anything */
   processInput(Player, Q, R),                         /* process input */
-  placePiece(Player, Board, Q, R, NewBoard, Log), !,  /* place piece on board */
+  placePiece(Player, Board, Q, R, NewBoard, Log),     /* place piece on board */
   printBoard(NewBoard),                               /* display board */
   printError(Log),                                    /* handle errors */
   gameIsRunning(NewBoard),                            /* check if game is over */
@@ -71,4 +77,5 @@ game(Player, Board):-
 game:-
   emptyBoard(Board),                            /* get empty board */
   printBoard(Board),                            /* display board */
-  game(player1, Board).                         /* start game loop */
+  \+ game(player1, Board),                      /* start game loop (game fails once it's game over) */
+  printGameOver.                                /* print end game screen */

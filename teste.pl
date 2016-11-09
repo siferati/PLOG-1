@@ -22,3 +22,5 @@ teste2:-
   write(' \\ /').
 
   :- include('utilities.pl').
+
+test:- false.
