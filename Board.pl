@@ -356,7 +356,7 @@ checkNInRow(Board, XPiece, YPiece, N):-
   NewN is N - 1,                                  /* prepare next ite */
   checkNInRow(Board, XAdj, YAdj, NewN).           /* loop */
 
-/**
+/** TODO needs testing. go to teste.pl Pieces disappear when diagonal!
 * Checks if the game is finished.
 * @param Board Game Board
 * @param XPiece Array coordiante of current piece being iterated
