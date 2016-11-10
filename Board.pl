@@ -351,7 +351,8 @@ checkNInRow(Board, XPiece, YPiece, N):-
   map(QAdj, RAdj, XAdj, YAdj),                    /* get array coordinates of the adjacent piece */
   find(Board, XAdj, YAdj, Adj),                   /* get adjacent cell */
   piece(Adj),                                     /* check if it's not empty or null cell */
-  checkSamePiece(Piece, Adj),                     /* check if both pieces are the same color */
+  /*checkSamePiece(Piece, Adj),                     /* check if both pieces are the same color */
+  Piece = Adj,
   NewN is N - 1,                                  /* prepare next ite */
   checkNInRow(Board, XAdj, YAdj, NewN).           /* loop */
 

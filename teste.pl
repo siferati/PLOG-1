@@ -6,7 +6,7 @@ no5Board([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, emptyCell, emptyCell, emptyCell, emptyCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, emptyCell, emptyCell, emptyCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
@@ -48,7 +48,7 @@ teste2:-
   write('| 2 |'), nl,
   write(' \\ /').
 
-  :- include('utilities.pl').
+:- include('utilities.pl').
 
 testNo:-
   yes5Board(Board),
@@ -64,10 +64,4 @@ test(Board):-
   write('Game is running!\n').
 
 test(_):-
-  write('Game is NOT running!\n').
-
-test4:-
-  no5Board(Board),
-  find(Board, 8, 8, Piece),
-  piece(Piece),
-  write(Piece).
+  write('Game Over!\n').

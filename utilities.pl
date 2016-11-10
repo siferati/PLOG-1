@@ -8,13 +8,6 @@ even(N):-
   0 is N mod 2.
 
 /**
-* Check if two things are the same
-* @param X
-* @param Y
-*/
-equal(X, X).
-
-/**
 * Calculates the abs of a number
 * @param X Number to calculate abs of
 * @param Y Storage for abs(X)

@@ -63,7 +63,6 @@ while (gameIsRunning)
 * @param Board Game Board
 */
 game(Player, Board):-
-  /*!,                                                  /* if game fails, it's game over, it shouldn't redo anything */
   processInput(Player, Q, R),                         /* process input */
   placePiece(Player, Board, Q, R, NewBoard, Log),     /* place piece on board */
   printBoard(NewBoard),                               /* display board */
