@@ -39,6 +39,10 @@ reverseMap(Q, R, X, Y):-
 piece(whitePiece).
 piece(blackPiece).
 
+/* check if two pieces are the same */
+checkSamePiece(whitePiece, whitePiece).
+checkSamePiece(blackPiece, blackPiece).
+
 /* players */
 player(player1).
 player(player2).
@@ -302,7 +306,7 @@ printBoard([Line|Tail], Index):-
   Index > -1, Index < Height,       /* while (i >= 0 && i < board.height) */
   printLine(Line, Index), nl,       /* print line */
   NewIndex is Index + 1,            /* i++ */
-  printBoard(Tail, NewIndex).       /* recursive call */
+  printBoard(Tail, NewIndex), !.    /* recursive call */
 
 /**
 * Interface for printing any board
@@ -347,41 +351,45 @@ checkNInRow(Board, XPiece, YPiece, N):-
   map(QAdj, RAdj, XAdj, YAdj),                    /* get array coordinates of the adjacent piece */
   find(Board, XAdj, YAdj, Adj),                   /* get adjacent cell */
   piece(Adj),                                     /* check if it's not empty or null cell */
-  Piece =:= Adj,                                  /* check if both pieces are the same color */
+  checkSamePiece(Piece, Adj),                     /* check if both pieces are the same color */
   NewN is N - 1,                                  /* prepare next ite */
   checkNInRow(Board, XAdj, YAdj, NewN).           /* loop */
 
-/** TODO succed if game is running, fail otherwise.
+/**
 * Checks if the game is finished.
 * @param Board Game Board
-* @param IteX Iterator on X (starts as board.width)
-* @param IteY Iterator on Y (starts as board.height)
+* @param XPiece Array coordiante of current piece being iterated
+* @param YPiece Array coordiante of current piece being iterated
+* @param XLast Array coordinate of last piece
+* @param YLast Array coordinate of last piece
 * @param N Number of pieces in a row required to win
 */
-gameIsRunning(_, 0, 0, _).                  /* stop condition */
+gameIsRunning(Board, XLast, YLast, XLast, YLast, N):-         /* stop condition (call for last cell of board) */
+  \+checkNInRow(Board, XLast, YLast, N).                      /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
 
-gameIsRunning(Board, 0, IteY, N):-          /* once IteX is 0, we need to "rewind" it, and move to next IteY */
-  IteY > 0,                                 /* make sure IteY is valid */
-  boardWidth(Width),                        /* get board width */
-  NewIteY is IteY - 1,                      /* prepare next ite */
-  gameIsRunning(Board, Width, NewIteY, N).  /* loop */
+gameIsRunning(Board, XLast, YPiece, XLast, YLast, N):-        /* move to next line */
+  YPiece =< YLast,                                            /* make sure YPiece is valid */
+  NewYPiece is YPiece + 1,                                    /* prepare next ite */
+  gameIsRunning(Board, 0, NewYPiece, XLast, YLast, N).        /* loop */
 
-gameIsRunning(Board, IteX, IteY, N):-       /* main loop */
-  IteX > 0, IteY > 0,                       /* make sure IteX and IteY are valid */
-  \+ checkNInRow(Board, IteX, IteY, N),     /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
-  NewIteX is IteX - 1,                      /* prepare next ite */
-  gameIsRunning(Board, NewIteX, IteY, N).   /* loop */
+gameIsRunning(Board, XPiece, YPiece, XLast, YLast, N):-       /* main loop */
+  XPiece =< XLast, YPiece =< YLast,                             /* make sure XPiece and YPiece are valid */
+  \+checkNInRow(Board, XPiece, YPiece, N),                    /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
+  NewXPiece is XPiece + 1,                                    /* move to next piece */
+  gameIsRunning(Board, NewXPiece, YPiece, XLast, YLast, N).   /* loop */
 
 /**
 * Interface for gameIsRunning.
 * @param Board Game Board
 */
 gameIsRunning(Board):-
-  maxPiecesInRow(N),                        /* get number of pieces in a row required to win */
-  boardWidth(Width), boardHeight(Height),   /* get board width and height */
-  gameIsRunning(Board, Width, Height, N).   /* start iterating */
+  maxPiecesInRow(N),                              /* get number of pieces in a row required to win */
+  boardWidth(Width), boardHeight(Height),         /* get board width and height */
+  XLast is Width - 1,                             /* array coordiante of last piece */
+  YLast is Height - 1,                            /* array coordinate of last piece */
+  gameIsRunning(Board, 0, 0, XLast, YLast, N).   /* start iterating (starting on the 1st cell)*/
 
-/** TODO game rules | BoardCell =:= emptyCell -why error?
+/** TODO game rules
 * Game Rules
 * @param Piece whitePiece or blackPiece
 * @param Board Game Board
