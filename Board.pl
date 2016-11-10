@@ -3,6 +3,7 @@ Board is a 2D array (9x9!) (list of lists) that should ALWAYS be access like thi
 board[Y][X]
 */
 
+/* includes */
 :- ensure_loaded('utilities.pl').
 
 /* Board radius N = max(abs(x), abs(z)) = 4  */
@@ -298,7 +299,7 @@ printLine(Line, LineIndex):-
 */
 
 /* base case | stop condition */
-printBoard([], _Index).
+printBoard([], _Index):- !.
 
 /* main loop */
 printBoard([Line|Tail], Index):-
@@ -329,7 +330,7 @@ getAdjacent(QPiece, RPiece, QAdj, RAdj):- QAdj is QPiece - 1, RAdj is RPiece + 1
 getAdjacent(QPiece, RPiece, QAdj, RPiece):- QAdj is QPiece + 1.
 getAdjacent(QPiece, RPiece, QAdj, RAdj):- QAdj is QPiece + 1, RAdj is RPiece - 1.
 
-/** TODO infinite loop. A is next to B, but B is also next to A. preciso dar coordenada a ignorar. dar lista, e ir acrescentando elementos q forem encontrados, e depois comparar com \+ member
+/**
 * Checks if there are N pieces of the same color in a row.
 * @param Board Game Board
 * @param XPiece Array Coordinate of piece
@@ -337,26 +338,27 @@ getAdjacent(QPiece, RPiece, QAdj, RAdj):- QAdj is QPiece + 1, RAdj is RPiece - 1
 * @param XComp Array Coordinate of comparing cell
 * @param YComp Array Coordinate of comparing cell
 * @param N number of pieces of the same color in a row found until now
+* @param Line List containing the corrent pieces that are in row
 */
-checkNInRow(_, _, _, 0).                          /* stop condition */
-checkNInRow(Board, XPiece, YPiece, N):-
-  N > 0,                                          /* make sure N is valid */
-  boardWidth(Width), boardHeight(Height),         /* get board width and height */
-  XPiece >= 0, XPiece < Width,                    /* make sure X is valid */
-  YPiece >= 0, YPiece < Height,                   /* make sure Y is valid */
-  find(Board, XPiece, YPiece, Piece),             /* get piece */
-  piece(Piece),                                   /* check if it's not empty or null cell */
-  reverseMap(QPiece, RPiece, XPiece, YPiece),     /* get hexagonal coordinates of Piece */
-  !, getAdjacent(QPiece, RPiece, QAdj, RAdj),     /* get an adjacent piece */
-  map(QAdj, RAdj, XAdj, YAdj),                    /* get array coordinates of the adjacent piece */
-  find(Board, XAdj, YAdj, Adj),                   /* get adjacent cell */
-  piece(Adj),                                     /* check if it's not empty or null cell */
-  /*checkSamePiece(Piece, Adj),                     /* check if both pieces are the same color */
-  Piece = Adj,
-  NewN is N - 1,                                  /* prepare next ite */
-  checkNInRow(Board, XAdj, YAdj, NewN).           /* loop */
+checkNInRow(_, _, _, 0, _).                           /* stop condition */
+checkNInRow(Board, XPiece, YPiece, N, Line):-
+  N > 0,                                              /* make sure N is valid */
+  boardWidth(Width), boardHeight(Height),             /* get board width and height */
+  XPiece >= 0, XPiece < Width,                        /* make sure X is valid */
+  YPiece >= 0, YPiece < Height,                       /* make sure Y is valid */
+  find(Board, XPiece, YPiece, Piece),                 /* get piece */
+  piece(Piece),                                       /* check if it's not empty or null cell */
+  reverseMap(QPiece, RPiece, XPiece, YPiece),         /* get hexagonal coordinates of Piece */
+  !, getAdjacent(QPiece, RPiece, QAdj, RAdj),         /* get an adjacent piece */
+  map(QAdj, RAdj, XAdj, YAdj),                        /* get array coordinates of the adjacent piece */
+  find(Board, XAdj, YAdj, Adj),                       /* get adjacent cell */
+  piece(Adj),                                         /* check if it's not empty or null cell */
+  Piece = Adj,                                        /* check if both pieces are the same color */
+  \+ member(QAdj-RAdj, Line),                         /* check if Adj is not already part of Line */
+  NewN is N - 1,                                      /* prepare next ite */
+  checkNInRow(Board, XAdj, YAdj, NewN, [QAdj-RAdj|Line]).   /* loop */
 
-/** TODO needs testing. go to teste.pl Pieces disappear when diagonal!
+/**
 * Checks if the game is finished.
 * @param Board Game Board
 * @param XPiece Array coordiante of current piece being iterated
@@ -366,7 +368,7 @@ checkNInRow(Board, XPiece, YPiece, N):-
 * @param N Number of pieces in a row required to win
 */
 gameIsRunning(Board, XLast, YLast, XLast, YLast, N):-         /* stop condition (call for last cell of board) */
-  \+checkNInRow(Board, XLast, YLast, N).                      /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
+  \+checkNInRow(Board, XLast, YLast, N, []).                  /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
 
 gameIsRunning(Board, XLast, YPiece, XLast, YLast, N):-        /* move to next line */
   YPiece =< YLast,                                            /* make sure YPiece is valid */
@@ -375,7 +377,7 @@ gameIsRunning(Board, XLast, YPiece, XLast, YLast, N):-        /* move to next li
 
 gameIsRunning(Board, XPiece, YPiece, XLast, YLast, N):-       /* main loop */
   XPiece =< XLast, YPiece =< YLast,                             /* make sure XPiece and YPiece are valid */
-  \+checkNInRow(Board, XPiece, YPiece, N),                    /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
+  \+checkNInRow(Board, XPiece, YPiece, N, []),                    /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
   NewXPiece is XPiece + 1,                                    /* move to next piece */
   gameIsRunning(Board, NewXPiece, YPiece, XLast, YLast, N).   /* loop */
 

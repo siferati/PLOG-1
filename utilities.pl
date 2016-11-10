@@ -1,5 +1,7 @@
 /* utilities */
 
+/* TODO substituir todas os predicados custom pelos das operações sobre listas (replace, find, etc) */
+
 /**
 * Checks if number is even
 * @param N Number to check
@@ -33,7 +35,7 @@ printSpace(N):-
 * @param X Index of element to find
 * @param Elem Returns element found
 */
-find([H|_], 0, H).
+find([H|_], 0, H):- !.
 find([_|T], X, Elem):- X > 0, NewX is X - 1, find(T, NewX, Elem).
 
 /**
@@ -43,7 +45,7 @@ find([_|T], X, Elem):- X > 0, NewX is X - 1, find(T, NewX, Elem).
 * @param Y Index of element to be found (array[Y][X])
 * @param Elem Element found
 */
-find([H|_], X, 0, Elem):- find(H, X, Elem).
+find([H|_], X, 0, Elem):- find(H, X, Elem), !.
 find([_|T], X, Y, Elem):- Y > 0, NewY is Y - 1, find(T, X, NewY, Elem).
 
 /**
@@ -53,7 +55,7 @@ find([_|T], X, Y, Elem):- Y > 0, NewY is Y - 1, find(T, X, NewY, Elem).
 * @param Elem Element to insert (replacement)
 * @param [H|R] Returned list
 */
-replace([_|T], 0, Elem, [Elem|T]).
+replace([_|T], 0, Elem, [Elem|T]):- !.
 replace([H|T], X, Elem, [H|R]):- X > 0, NewX is X-1, replace(T, NewX, Elem, R).
 
 /**
@@ -64,5 +66,5 @@ replace([H|T], X, Elem, [H|R]):- X > 0, NewX is X-1, replace(T, NewX, Elem, R).
 * @param Elem Element to insert (replacement)
 * @param [H|R] Returned list (2D array)
 */
-replace([H|T], X, 0, Elem, [NewH|T]):- replace(H, X, Elem, NewH).
+replace([H|T], X, 0, Elem, [NewH|T]):- replace(H, X, Elem, NewH), !.
 replace([H|T], X, Y, Elem, [H|R]):- Y > 0, NewY is Y-1, replace(T, X, NewY, Elem, R).
