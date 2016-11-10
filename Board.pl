@@ -308,7 +308,7 @@ printBoard([Line|Tail], Index):-
   NewIndex is Index + 1,            /* i++ */
   printBoard(Tail, NewIndex), !.    /* recursive call */
 
-/**
+/** TODO desenhar coordenadas!
 * Interface for printing any board
 */
 printBoard(Board):-
@@ -329,7 +329,7 @@ getAdjacent(QPiece, RPiece, QAdj, RAdj):- QAdj is QPiece - 1, RAdj is RPiece + 1
 getAdjacent(QPiece, RPiece, QAdj, RPiece):- QAdj is QPiece + 1.
 getAdjacent(QPiece, RPiece, QAdj, RAdj):- QAdj is QPiece + 1, RAdj is RPiece - 1.
 
-/**
+/** TODO infinite loop. A is next to B, but B is also next to A. preciso dar coordenada a ignorar. dar lista, e ir acrescentando elementos q forem encontrados, e depois comparar com \+ member
 * Checks if there are N pieces of the same color in a row.
 * @param Board Game Board
 * @param XPiece Array Coordinate of piece
