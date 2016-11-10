@@ -1,6 +1,6 @@
 /* Game Loop */
 
-/* includes TODO include vs ensure_loaded */
+/* includes */
 :- ensure_loaded('utilities.pl').
 :- ensure_loaded('Board.pl').
 
@@ -9,7 +9,7 @@
 * @param Log Error log
 */
 printError(none).                                   /* no errors, do nothing */
-printError(invalidPlay):- write('Invalid play!'). /* invalid play */
+printError(invalidPlay):- write('Invalid play!').   /* invalid play */
 
 /**
 * Switch player turn (in case there were no errors)
@@ -30,7 +30,7 @@ switchPlayer(player2, player2, _).
 getPlayer(player1, 'Player 1').
 getPlayer(player2, 'Player 2').
 
-/** TODO fix output 'R: :| ' fazer input de coords como o ferrolho e nao precisar de ponto
+/** TODO utilizar getchar em vez de read!
 * Processes user input (while asking questions)
 * @param Player Current player
 * @param Q Hex Coordinate to insert Piece
@@ -43,6 +43,12 @@ processInput(Player, Q, R):-
   write('Q: '), read(Q),
   write('R: '), read(R).
 
+/** TODO game over screen
+* Prints the game over screen to the terminal
+*/
+printGameOver:-
+  write('Game Over\n').
+
 /*
 while (gameIsRunning)
 {
@@ -52,13 +58,13 @@ while (gameIsRunning)
 }
 */
 
-/** TODO end game screen | repeat vs recursive call | Use modules? nth0 (list)
+/**
 * @param Player Current player
 * @param Board Game Board
 */
 game(Player, Board):-
   processInput(Player, Q, R),                         /* process input */
-  placePiece(Player, Board, Q, R, NewBoard, Log), !,  /* place piece on board */
+  placePiece(Player, Board, Q, R, NewBoard, Log),     /* place piece on board */
   printBoard(NewBoard),                               /* display board */
   printError(Log),                                    /* handle errors */
   gameIsRunning(NewBoard),                            /* check if game is over */
@@ -71,4 +77,5 @@ game(Player, Board):-
 game:-
   emptyBoard(Board),                            /* get empty board */
   printBoard(Board),                            /* display board */
-  game(player1, Board).                         /* start game loop */
+  \+ game(player1, Board),                      /* start game loop (game fails once it's game over) */
+  printGameOver.                                /* print end game screen */

@@ -1,0 +1,38 @@
+/**
+* Makes a play
+*/
+makePlay(Board, X, Y, NewBoard).
+
+/**
+* Makes bot play
+* ListaResultadoParesXY -> [1-1, 2-3, 4-5].
+*/
+makeBotPlay:-
+	findall(X-Y, makePlay(Board, X, Y, NewBoard), ListaResultadoParesXY).
+
+/**
+* play easy mode
+*/
+botEasyMode:-
+	makeBotPlay(X-Y, Board, NewBoard, ListaResultadoParesXY).
+	chooseRandomMove(ListaResultadosParesXY).
+	
+/**
+* play hard mode
+*/
+botHardMode:-
+	makeBotPlay(X-Y, Board, NewBoard, ListaResultadoParesXY).
+	chooseBestMove(ListaResultadosParesXY).
+	
+/**
+* Works based on priorities
+* 1. win
+* 2. don't let them win
+* 3. something
+*/
+chooseBestMove.
+
+Como aceder aos pares X-Y:
+ola(X-Y):-
+	write(X),
+	write(Y).
