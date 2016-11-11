@@ -248,25 +248,27 @@ printLineTop(LineIndex, ElemIndex):-
 
 /* print first line */
 printLine(Line, 0):-
-  printNullCells(0, -2),                  /* print left side null cells */
-  printLineTop(0, 0), nl,                 /* print top */
-  write(0), write(' '),                   /* print coord */
-  printNullCells(0, 0),                   /* print left side null cells */
-  printLineMid(Line, 0, 0), nl,           /* print middle of line */
-  printNullCells(0, 0),                   /* print left side null cells (offset by 2 */
-  offset(0, '/'),                         /* print top of 1st element of next line */
-  printLineBot(0, 0),                     /* print bottom of line */
-  offset(0, '\\').                        /* print top of last element of next line */
+  write('          0   1   2   3   4'), nl,   /* it's gonna stay hard-coded, too much work for a freaking print */
+  printNullCells(0, -2),                      /* print left side null cells */
+  printLineTop(0, 0), nl,                     /* print top */
+  write(0), write(' '),                       /* print coord */
+  printNullCells(0, 0),                       /* print left side null cells */
+  printLineMid(Line, 0, 0), nl,               /* print middle of line */
+  printNullCells(0, 0),                       /* print left side null cells (offset by 2 */
+  offset(0, '/'),                             /* print top of 1st element of next line */
+  printLineBot(0, 0),                         /* print bottom of line */
+  offset(0, '\\').                            /* print top of last element of next line */
 
 /* print last line */
 printLine(Line, LineIndex):-
-  boardHeight(Height),                     /* get height */
-  LineIndex =:= Height - 1,                /* make sure it's the last line */
-  write(LineIndex), write(' '),            /* print coord */
-  printNullCells(LineIndex, 0),            /* print left side null cells */
-  printLineMid(Line, LineIndex, 0), nl,    /* print middle of line */
-  printNullCells(LineIndex, -2),           /* print left side null cells */
-  printLineBot(LineIndex, 0).              /* print bottom of line */
+  boardHeight(Height),                        /* get height */
+  LineIndex =:= Height - 1,                   /* make sure it's the last line */
+  write(LineIndex), write(' '),               /* print coord */
+  printNullCells(LineIndex, 0),               /* print left side null cells */
+  printLineMid(Line, LineIndex, 0), nl,       /* print middle of line */
+  printNullCells(LineIndex, -2),              /* print left side null cells */
+  printLineBot(LineIndex, 0), nl,             /* print bottom of line */
+  write('             -4  -3  -2  -1   0').   /* it's gonna stay hard-coded, too much work for a freaking print */
 
 /* print odd lines */
 printLine(Line, LineIndex):-
