@@ -1,7 +1,5 @@
 /* utilities */
 
-/* TODO substituir todas os predicados custom pelos das operações sobre listas (replace, find, etc) */
-
 /**
 * Checks if number is even
 * @param N Number to check
@@ -28,6 +26,14 @@ printSpace(N):-
   write(' '),
   NewN is N - 1,
   printSpace(NewN).
+
+/**
+* Read int from temrinal
+* @param Input Int to read
+*/
+getInt(Input):-
+  get_code(Char),         /* read asci code */
+  Input is Char - 48.     /* input = char - '0' */
 
 /**
 * Finds an element in a list

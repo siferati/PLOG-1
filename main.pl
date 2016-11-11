@@ -30,7 +30,18 @@ switchPlayer(player2, player2, _).
 getPlayer(player1, 'Player 1').
 getPlayer(player2, 'Player 2').
 
-/** TODO utilizar getchar em vez de read!
+/**
+* Reads the coords from the terminal
+* @param Q Hex coords
+* @param R Hex coords
+*/
+readCoords(Q, R):-
+  getInt(Q),      /* read Q */
+  get_char(_),    /* ignore - */
+  getInt(R),      /* read R */
+  get_char(_).    /* ignore nl */
+
+/** TODO meter coords com letras! 3f, 2a, etc (no negative coords)
 * Processes user input (while asking questions)
 * @param Player Current player
 * @param Q Hex Coordinate to insert Piece
@@ -39,9 +50,8 @@ getPlayer(player2, 'Player 2').
 processInput(Player, Q, R):-
   write('\nCurrent Player: '), getPlayer(Player, PlayerName),
   write(PlayerName), nl,
-  write('Insert Piece:\n'),
-  write('Q: '), read(Q),
-  write('R: '), read(R).
+  write('Insert Piece (Q-R):\n'),
+  readCoords(Q, R).
 
 /** TODO game over screen
 * Prints the game over screen to the terminal

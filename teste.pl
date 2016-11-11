@@ -78,9 +78,12 @@ test(Board):-
 test(_):-
   write('Game Over!\n').*/
 
-/* TODO pieces disappearing!? */
 /* Q: -2. R: 3. */
 test:-
   disappearBoard(Board),
   printBoard(Board),
   \+ game(player1, Board).
+
+testPrint:-
+  no5Board(Board),
+  printBoard(Board).

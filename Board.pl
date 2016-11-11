@@ -3,6 +3,8 @@ Board is a 2D array (9x9!) (list of lists) that should ALWAYS be access like thi
 board[Y][X]
 */
 
+/* TODO pieces disappearing!? */
+
 /* includes */
 :- ensure_loaded('utilities.pl').
 
@@ -246,48 +248,53 @@ printLineTop(LineIndex, ElemIndex):-
 
 /* print first line */
 printLine(Line, 0):-
-  printNullCells(0, 0),                  /* print left side null cells */
+  printNullCells(0, -2),                  /* print left side null cells */
   printLineTop(0, 0), nl,                 /* print top */
+  write(0), write(' '),                   /* print coord */
   printNullCells(0, 0),                   /* print left side null cells */
   printLineMid(Line, 0, 0), nl,           /* print middle of line */
-  printNullCells(0, 2),                   /* print left side null cells (offset by 2 */
+  printNullCells(0, 0),                   /* print left side null cells (offset by 2 */
   offset(0, '/'),                         /* print top of 1st element of next line */
   printLineBot(0, 0),                     /* print bottom of line */
   offset(0, '\\').                        /* print top of last element of next line */
 
 /* print last line */
 printLine(Line, LineIndex):-
-  boardHeight(Height),                    /* get height */
-  LineIndex =:= Height - 1,               /* make sure it's the last line */
-  printNullCells(LineIndex, 0),           /* print left side null cells */
-  printLineMid(Line, LineIndex, 0), nl,   /* print middle of line */
-  printNullCells(LineIndex, 0),           /* print left side null cells */
-  printLineBot(LineIndex, 0).             /* print bottom of line */
+  boardHeight(Height),                     /* get height */
+  LineIndex =:= Height - 1,                /* make sure it's the last line */
+  write(LineIndex), write(' '),            /* print coord */
+  printNullCells(LineIndex, 0),            /* print left side null cells */
+  printLineMid(Line, LineIndex, 0), nl,    /* print middle of line */
+  printNullCells(LineIndex, -2),           /* print left side null cells */
+  printLineBot(LineIndex, 0).              /* print bottom of line */
 
 /* print odd lines */
 printLine(Line, LineIndex):-
   \+even(LineIndex),                      /* check it's an odd line */
+  write(LineIndex), write(' '),           /* print coord */
   printNullCells(LineIndex, 0),           /* print left side null cells */
   write('  '),                            /* offset */
   printLineMid(Line, LineIndex, 0), nl,   /* print middle of line */
-  printNullCells(LineIndex, 0),           /* print left side null cells */
+  printNullCells(LineIndex, -2),          /* print left side null cells */
   offset(LineIndex, '/'),                 /* print top of 1st element of next line (default!) */
   printLineBot(LineIndex, 0),             /* print bottom of line */
   offset(LineIndex, '\\').                /* print top of last element of next line */
 
 /* print line index 4, cause reasons */
 printLine(Line, 4):-
+  write(4), write(' '),          /* print coord */
   printNullCells(4, 0),          /* print left side null cells */
   printLineMid(Line, 4, 0), nl,  /* print middle of line */
-  printNullCells(4, 2),          /* print left side null cells (offset by 2) */
+  printNullCells(4, -2),         /* print left side null cells (offset by 2) */
   printLineBot(4, 0).            /* print bottom of line */
 
 /* print even lines */
 printLine(Line, LineIndex):-
   even(LineIndex),                       /* check it's an even line */
+  write(LineIndex), write(' '),          /* print coord */
   printNullCells(LineIndex, 0),          /* print left side null cells */
   printLineMid(Line, LineIndex, 0), nl,  /* print middle of line */
-  printNullCells(LineIndex, 2),         /* print left side null cells (offset by 2) */
+  printNullCells(LineIndex, 0),          /* print left side null cells (offset by 2) */
   offset(LineIndex, '/'),                /* print top of 1st element of next line (default!) */
   printLineBot(LineIndex, 0),            /* print bottom of line */
   offset(LineIndex, '\\').               /* print top of last element of next line */
@@ -354,7 +361,7 @@ checkNInRow(Board, XPiece, YPiece, N, Line):-
   find(Board, XAdj, YAdj, Adj),                       /* get adjacent cell */
   piece(Adj),                                         /* check if it's not empty or null cell */
   Piece = Adj,                                        /* check if both pieces are the same color */
-  \+ member(QAdj-RAdj, Line),                         /* check if Adj is not already part of Line */
+  \+ memberchk(QAdj-RAdj, Line),                         /* check if Adj is not already part of Line */
   NewN is N - 1,                                      /* prepare next ite */
   checkNInRow(Board, XAdj, YAdj, NewN, [QAdj-RAdj|Line]).   /* loop */
 
