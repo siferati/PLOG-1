@@ -36,10 +36,26 @@ getPlayer(player2, 'Player 2').
 * @param R Hex coords
 */
 readCoords(Q, R):-
-  getInt(Q),      /* read Q */
-  get_char(_),    /* ignore - */
-  getInt(R),      /* read R */
-  get_char(_).    /* ignore nl */
+  get_code(Minus),  /* read Q */
+  getQ(Minus, Q),   /* get real value of Q */
+  getInt(R),        /* read R */
+  get_char(_).      /* ignore nl */
+
+/** TODO do this for R
+* Checks if Q is positive or negative (cause of get_char problems zzz)
+* @param Minus Char read from terminal
+* @param Q Real value of Q is returned
+*/
+getQ(Minus, Q):-    /* Q is negative */
+  minus(Minus),       /* if there was a minus signal */
+  getCode(ASCIQ),     /* get Q ASCI Code (ignoring \n) */
+  PosQ is ASCIQ - 48, /* positive value of Q = asciQ - '0' */
+  Q is PosQ * -1.     /* get real Q */
+
+getQ(Minus, Q):-      /* Q is positive */
+  get_char(_),        /* ignore \n */
+  Q is Minus - 48.    /* Q = Minus - '0' */
+
 
 /** TODO meter coords com letras! 3f, 2a, etc (no negative coords)
 * Processes user input (while asking questions)

@@ -28,12 +28,33 @@ printSpace(N):-
   printSpace(NewN).
 
 /**
+* Interface for get_char, when it ends with \n
+* @param Input Input
+*/
+getChar(Input):-
+  get_char(Input),      /* read input */
+  get_char(_).          /* ignore \n */
+
+/**
+* Interface for get_code, when it ends with \n
+* @param Input Input
+*/
+getCode(Input):-
+  get_code(Input),      /* read input */
+  get_code(_).          /* ignore \n */
+
+/**
 * Read int from temrinal
 * @param Input Int to read
 */
 getInt(Input):-
   get_code(Char),         /* read asci code */
   Input is Char - 48.     /* input = char - '0' */
+
+/*
+* Minus (-) ASCI Code is 45
+*/
+minus(45).
 
 /**
 * Finds an element in a list

@@ -241,6 +241,73 @@ printLineTop(LineIndex, ElemIndex):-
   printLineTop(LineIndex, NewElemIndex).    /* recursive call */
 
 /**
+* Translater for printing coords
+* @param LineIndex Index of Line
+*/
+printVerticalCoord(LineIndex):-   /* when it's above the equator */
+  boardRadius(Radius),
+  Coord is LineIndex - Radius,
+  Coord < 0,
+  write(Coord),
+  write(' ').
+
+printVerticalCoord(LineIndex):-   /* when it's below (or at) the equator */
+  boardRadius(Radius),
+  Coord is LineIndex - Radius,
+  Coord >= 0,
+  write(' '),
+  write(Coord),
+  write(' ').
+
+/** TODO redo this, it's shitty. make printTopCoords printBottomCoords predicate
+* Prints the coordinates to the terminal
+* @param LineIndex Index of line (either 0 or lastLine)
+* @param Count Counter. Always set to 0 when first call
+*/
+
+printCoord(0, Count):-      /* stop condition - when it's the last coord of top line */
+  boardRadius(Radius),      /* get board radius */
+  Count = Radius,           /* check it's the last coord */
+  write(Count).             /* print coord */
+
+printCoord(0, Count):-      /* when it's the top line */
+  boardRadius(Radius),      /* get board radius */
+  Count < Radius,           /* make sure it's not the last coord */
+  write(Count),             /* print coord */
+  write('   '),             /* print spaces */
+  NewCount is Count + 1,    /* prepare next ite */
+  printCoord(0, NewCount).  /* recursive call */
+
+printCoord(_, Count):-              /* stop condition - when it's the last coord of bottom line */
+  boardRadius(Radius),              /* get board radius */
+  Count = Radius,                   /* make sure it's the last coord */
+  write(' '),                       /* print spaces */
+  write(0).                         /* print coord */
+
+printCoord(LineIndex, Count):-      /* when it's the bottom line */
+  boardRadius(Radius),              /* get board radius */
+  Count < Radius,                   /* make sure it's not the last coord */
+  CoordToWrite is Count - 4,        /* get coord to print */
+  write(CoordToWrite),              /* print coord */
+  write('  '),                      /* print spaces */
+  NewCount is Count + 1,            /* prepare next ite */
+  printCoord(LineIndex, NewCount).  /* recursive call */
+
+/**
+* Interface for printCoord
+* @param LineIndex Index of line (either 0 or lastLine)
+*/
+
+printCoord(0):-                   /* when it's the top line */
+  printNullCells(0, -3),          /* print null cells and offset */
+  printCoord(0, 0).               /* print coords */
+
+printCoord(LineIndex):-           /* when it's the bottom line */
+  printNullCells(LineIndex, -3),  /* print null cells and offset */
+  write('   '),                   /* print spaces */
+  printCoord(LineIndex, 0).       /* print coords */
+
+/**
 * Interface for printing a line of the board to the terminal
 * @param Line Line (list) to print
 * @param LineIndex Index of the line to print
@@ -248,13 +315,13 @@ printLineTop(LineIndex, ElemIndex):-
 
 /* print first line */
 printLine(Line, 0):-
-  write('          0   1   2   3   4'), nl,   /* it's gonna stay hard-coded, too much work for a freaking print */
-  printNullCells(0, -2),                      /* print left side null cells */
+  printCoord(0), nl,                          /* print coods */
+  printNullCells(0, -3),                      /* print left side null cells */
   printLineTop(0, 0), nl,                     /* print top */
-  write(0), write(' '),                       /* print coord */
+  printVerticalCoord(0),                      /* print coord */
   printNullCells(0, 0),                       /* print left side null cells */
   printLineMid(Line, 0, 0), nl,               /* print middle of line */
-  printNullCells(0, 0),                       /* print left side null cells (offset by 2 */
+  printNullCells(0, -1),                       /* print left side null cells (offset by 2 */
   offset(0, '/'),                             /* print top of 1st element of next line */
   printLineBot(0, 0),                         /* print bottom of line */
   offset(0, '\\').                            /* print top of last element of next line */
@@ -263,40 +330,40 @@ printLine(Line, 0):-
 printLine(Line, LineIndex):-
   boardHeight(Height),                        /* get height */
   LineIndex =:= Height - 1,                   /* make sure it's the last line */
-  write(LineIndex), write(' '),               /* print coord */
+  printVerticalCoord(LineIndex),              /* print coord */
   printNullCells(LineIndex, 0),               /* print left side null cells */
   printLineMid(Line, LineIndex, 0), nl,       /* print middle of line */
-  printNullCells(LineIndex, -2),              /* print left side null cells */
+  printNullCells(LineIndex, -3),              /* print left side null cells */
   printLineBot(LineIndex, 0), nl,             /* print bottom of line */
-  write('             -4  -3  -2  -1   0').   /* it's gonna stay hard-coded, too much work for a freaking print */
+  printCoord(LineIndex).                      /* print coords */
 
 /* print odd lines */
 printLine(Line, LineIndex):-
   \+even(LineIndex),                      /* check it's an odd line */
-  write(LineIndex), write(' '),           /* print coord */
+  printVerticalCoord(LineIndex),          /* print coord */
   printNullCells(LineIndex, 0),           /* print left side null cells */
   write('  '),                            /* offset */
   printLineMid(Line, LineIndex, 0), nl,   /* print middle of line */
-  printNullCells(LineIndex, -2),          /* print left side null cells */
+  printNullCells(LineIndex, -3),          /* print left side null cells */
   offset(LineIndex, '/'),                 /* print top of 1st element of next line (default!) */
   printLineBot(LineIndex, 0),             /* print bottom of line */
   offset(LineIndex, '\\').                /* print top of last element of next line */
 
 /* print line index 4, cause reasons */
 printLine(Line, 4):-
-  write(4), write(' '),          /* print coord */
+  printVerticalCoord(4),         /* print coord */
   printNullCells(4, 0),          /* print left side null cells */
   printLineMid(Line, 4, 0), nl,  /* print middle of line */
-  printNullCells(4, -2),         /* print left side null cells (offset by 2) */
+  printNullCells(4, -3),         /* print left side null cells (offset by 2) */
   printLineBot(4, 0).            /* print bottom of line */
 
 /* print even lines */
 printLine(Line, LineIndex):-
   even(LineIndex),                       /* check it's an even line */
-  write(LineIndex), write(' '),          /* print coord */
+  printVerticalCoord(LineIndex),         /* print coord */
   printNullCells(LineIndex, 0),          /* print left side null cells */
   printLineMid(Line, LineIndex, 0), nl,  /* print middle of line */
-  printNullCells(LineIndex, 0),          /* print left side null cells (offset by 2) */
+  printNullCells(LineIndex, -1),         /* print left side null cells (offset by 2) */
   offset(LineIndex, '/'),                /* print top of 1st element of next line (default!) */
   printLineBot(LineIndex, 0),            /* print bottom of line */
   offset(LineIndex, '\\').               /* print top of last element of next line */
