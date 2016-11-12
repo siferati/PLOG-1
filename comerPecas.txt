@@ -1,0 +1,22 @@
+caso base:
+1. peça é comida quando toda as peças adjacentes sao enimigas ou nulls.
+
+2. peça é comida quando peça adjacente é comida
+
+
+
+algoritmo:
+1. iterar sobre tabuleiro, peça a peça (Piece).
+2. arranjar lista com peças adjacentes (Adj) de Piece.
+3. iterar sobre lista de peças adjacentes.
+4. chamada recursiva com Adj.
+
+
+
+escolho Piece
+escolho Adj da msm cor (cuidado para n escolher Piece anterior)
+qd n houver na msm cor: 
+	se houver empty, sucesso
+	se nao houver empty, fail (nao posso desfazer a lista de peças encontradas ate ao momento!)
+
+
