@@ -385,7 +385,7 @@ printBoard([Line|Tail], Index):-
   NewIndex is Index + 1,            /* i++ */
   printBoard(Tail, NewIndex), !.    /* recursive call */
 
-/** TODO desenhar coordenadas!
+/**
 * Interface for printing any board
 */
 printBoard(Board):-

@@ -36,28 +36,30 @@ getPlayer(player2, 'Player 2').
 * @param R Hex coords
 */
 readCoords(Q, R):-
-  get_code(Minus),  /* read Q */
-  getQ(Minus, Q),   /* get real value of Q */
-  getInt(R),        /* read R */
-  get_char(_).      /* ignore nl */
+  get_code(MinusQ),      /* read Q (or minus signal) */
+  getCoord(MinusQ, Q),   /* get real value of Q */
+  get_code(MinusR),      /* read R (or minus signal) */
+  getCoord(MinusR, R).   /* get real value of R */
 
-/** TODO do this for R
-* Checks if Q is positive or negative (cause of get_char problems zzz)
+/**
+* Checks if Coord is positive or negative (cause of get_char problems (reading - ))
 * @param Minus Char read from terminal
-* @param Q Real value of Q is returned
+* @param Coord Real value of Coord is returned
 */
-getQ(Minus, Q):-    /* Q is negative */
-  minus(Minus),       /* if there was a minus signal */
-  getCode(ASCIQ),     /* get Q ASCI Code (ignoring \n) */
-  PosQ is ASCIQ - 48, /* positive value of Q = asciQ - '0' */
-  Q is PosQ * -1.     /* get real Q */
+getCoord(Minus, Coord):-      /* Coord is negative */
+  minus(Minus),               /* if there was a minus signal */
+  getCode(ASCICoord),         /* get Coord ASCI Code (ignoring \n) */
+  PosCoord is ASCICoord - 48, /* positive value of Coord = asciQ - '0' */
+  Coord is PosCoord * -1,     /* get real Coord */
+  !.
 
-getQ(Minus, Q):-      /* Q is positive */
-  get_char(_),        /* ignore \n */
-  Q is Minus - 48.    /* Q = Minus - '0' */
+getCoord(Minus, Coord):-      /* Coord is positive */
+  get_char(_),                /* ignore \n */
+  Coord is Minus - 48,        /* Coord = Minus - '0' */
+  !.
 
 
-/** TODO meter coords com letras! 3f, 2a, etc (no negative coords)
+/**
 * Processes user input (while asking questions)
 * @param Player Current player
 * @param Q Hex Coordinate to insert Piece
@@ -102,6 +104,14 @@ game(Player, Board):-
 */
 game:-
   emptyBoard(Board),                            /* get empty board */
+  printBoard(Board),                            /* display board */
+  \+ game(player1, Board),                      /* start game loop (game fails once it's game over) */
+  printGameOver.                                /* print end game screen */
+
+/** TODO needs checking on game over... cant figure out why it bugs
+* Test function for debugging
+*/
+game(Board):-
   printBoard(Board),                            /* display board */
   \+ game(player1, Board),                      /* start game loop (game fails once it's game over) */
   printGameOver.                                /* print end game screen */

@@ -1,16 +1,17 @@
 :- ensure_loaded('Board.pl').
 :- ensure_loaded('utilities.pl').
+:- ensure_loaded('main.pl').
 
 /* test board */
 no5Board([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, whitePiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, emptyCell, emptyCell, emptyCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, blackPiece, whitePiece, blackPiece, emptyCell, emptyCell, emptyCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, blackPiece, emptyCell, emptyCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, blackPiece, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
 /* test board */
@@ -60,30 +61,12 @@ teste2:-
   write('| 2 |'), nl,
   write(' \\ /').
 
-:- include('utilities.pl').
-
-/*testNo:-
-  yes5Board(Board),
-  test(Board).
-
-testYes:-
+test:-
   no5Board(Board),
-  test(Board).
+  game(Board).
 
-test(Board):-
-  printBoard(Board),
-  gameIsRunning(Board),
-  write('Game is running!\n').
-
-test(_):-
-  write('Game Over!\n').*/
-
-/* Q: -2. R: 3. */
+/* Q: -2. R: 3.
 test:-
   disappearBoard(Board),
   printBoard(Board),
-  \+ game(player1, Board).
-
-testPrint:-
-  no5Board(Board),
-  printBoard(Board).
+  \+ game(player1, Board).*/
