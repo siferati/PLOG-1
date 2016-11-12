@@ -20,9 +20,21 @@ yes5Board([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece],
+[emptyCell, whitePiece, whitePiece, whitePiece, whitePiece, blackPiece, blackPiece, blackPiece, blackPiece],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
+
+/* test checkPiece board */
+checkPieceBoard([
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[blackPiece, blackPiece, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
+[blackPiece, whitePiece, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[blackPiece, blackPiece, blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
@@ -62,9 +74,15 @@ teste2:-
   write(' \\ /').
 
 test:-
-  no5Board(Board),
-  game(Board).
+  checkPieceBoard(Board),
+  printBoard(Board),
+  \+ checkPiece(Board, 1, 5, List),
+  print(List).
 
+testGameOver:-
+  yes5Board(Board),
+  game(Board).
+  
 /* Q: -2. R: 3.
 test:-
   disappearBoard(Board),
