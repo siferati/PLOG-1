@@ -99,7 +99,7 @@ game(Player, Board):-
   switchPlayer(Player, NewPlayer, Log),               /* switch player turn */
   game(NewPlayer, NewBoard).                          /* loop */
 
-/**
+/** TODO perguntar se o 2º jogar quer trocar com o 1º, na primeira jogada
 * Interface to start the game
 */
 game:-

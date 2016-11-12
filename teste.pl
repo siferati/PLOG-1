@@ -6,12 +6,12 @@
 no5Board([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
-[emptyCell, emptyCell, whitePiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, blackPiece, whitePiece, blackPiece, emptyCell, emptyCell, emptyCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, blackPiece, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, emptyCell, emptyCell, nullCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, blackPiece, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, whitePiece, whitePiece, whitePiece, whitePiece, blackPiece, blackPiece, blackPiece, emptyCell],
+[blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
 /* test board */
@@ -20,7 +20,7 @@ yes5Board([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, emptyCell, emptyCell, emptyCell, emptyCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
