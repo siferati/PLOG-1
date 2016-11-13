@@ -54,10 +54,16 @@ getInt(Input):-
   get_code(_),
   Input is Char - 48.     /* input = char - '0' */
 
-/*
+/**
 * Minus (-) ASCI Code is 45
 */
 minus(45).
+
+/**
+* Letter E ASCI Code is 101 and 69
+*/
+letterE(101).
+letterE(69).
 
 /**
 * Finds an element in a list

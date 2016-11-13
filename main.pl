@@ -3,6 +3,7 @@
 /* includes */
 :- ensure_loaded('utilities.pl').
 :- ensure_loaded('Board.pl').
+:- ensure_loaded('Interface.pl').
 
 /**
 * Handles and prints errors to the terminal
@@ -36,8 +37,10 @@ getPlayer(player2, 'Player 2').
 * @param R Hex coords
 */
 readCoords(Q, R):-
+  write('Q: '),
   get_code(MinusQ),      /* read Q (or minus signal) */
   getCoord(MinusQ, Q),   /* get real value of Q */
+  write('R: '),
   get_code(MinusR),      /* read R (or minus signal) */
   getCoord(MinusR, R).   /* get real value of R */
 
@@ -48,11 +51,9 @@ readCoords(Q, R):-
 * @param Coord Real value of Coord is returned
 */
 
-getCoord(Minus, Coord):-      /* Coord is negative */
-  getCode(ASCICoord),         /* get Coord ASCI Code (ignoring \n) */
-  ASCICoord =:= 
-
-  !.
+getCoord(LetterE, _):-        /* input was letter E */
+  letterE(LetterE),           /* check letter E */
+  halt.                       /* stop execution */
 
 getCoord(Minus, Coord):-      /* Coord is negative */
   minus(Minus),               /* if there was a minus signal */
@@ -76,7 +77,7 @@ getCoord(Minus, Coord):-      /* Coord is positive */
 processInput(Player, Q, R):-
   write('\nCurrent Player: '), getPlayer(Player, PlayerName),
   write(PlayerName), nl,
-  write('Insert Piece (Q-R):\n'),
+  write('Insert Piece (press E to exit):\n'),
   readCoords(Q, R).
 
 
@@ -101,6 +102,12 @@ game(Player, Board):-
   gameIsRunning(NewBoard),                            /* check if game is over */
   switchPlayer(Player, NewPlayer, Log),               /* switch player turn */
   !, game(NewPlayer, NewBoard).                       /* loop */
+
+/**
+* Start game.
+*/
+start:-
+  displayMenuInicial.
 
 /** TODO perguntar se o 2º jogar quer trocar com o 1º, na primeira jogada
 * Interface to start the game
