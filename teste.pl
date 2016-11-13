@@ -15,6 +15,18 @@ no5Board([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
 /* test board */
+sameColorAdjBoard([
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, emptyCell, emptyCell, emptyCell, nullCell],
+[emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, whitePiece, emptyCell, emptyCell, emptyCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, emptyCell, emptyCell, emptyCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
+
+/* test board */
 yes5Board([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
@@ -79,10 +91,16 @@ test:-
   \+ checkPiece(Board, 1, 5, List),
   print(List).
 
+testGetAdj:-
+  sameColorAdjBoard(Board),
+  printBoard(Board),
+  getSameColorAdj(Board, 0, 0, whitePiece, List),
+  print(List).
+
 testGameOver:-
   yes5Board(Board),
   game(Board).
-  
+
 /* Q: -2. R: 3.
 test:-
   disappearBoard(Board),
