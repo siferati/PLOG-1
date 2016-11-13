@@ -134,7 +134,8 @@ botCheckPriorityWin(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-        
   placePiece(Player, Board, Q, R, TempBoard, Log),                                /* place piece */
   printError(Log),                                                                /* print error (LOG SHOULD ALWAYS BE NONE) */
   \+ gameIsRunning(TempBoard),                                                    /* check game over */
-  NewBoard = TempBoard.                                                           /* return new board */
+  NewBoard = TempBoard,                                                           /* return new board */
+  !.
 
 botCheckPriorityWin(Board, Player, PossiblePlays, [_H|T], NewBoard):-             /* if it's NOT possible to win */
   botCheckPriorityWin(Board, Player, PossiblePlays, T, NewBoard).                 /* recursive call */
@@ -147,8 +148,9 @@ botCheckPriorityWin(Board, Player, PossiblePlays, [_H|T], NewBoard):-           
 * @param Iterator List Iterator
 * @param NewBoard New Board
 */
-botCheckPriorityNotLose(Board, Player, PossiblePlays, [], NewBoard):- !.          /* stop condition */
-  /*nextCall(Board, Player, [], NewBoard):-                                       /* check next priority */
+botCheckPriorityNotLose(Board, Player, PossiblePlays, [], NewBoard):-             /* stop condition */
+  botCheckPriorityLine4(Board, Player, PossiblePlays, PossiblePlays, NewBoard),   /* check next priority */
+  !.
 
 botCheckPriorityNotLose(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-      /* if opponent can win */
   switchPlayer(Player, Opponent, none),                                           /* switch to opponent's POV */
@@ -157,7 +159,29 @@ botCheckPriorityNotLose(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-    
   printError(Log),                                                                /* print error (LOG SHOULD ALWAYS BE NONE) */
   \+ gameIsRunning(TempBoard),                                                    /* check game over */
   placePiece(Player, Board, Q, R, NewBoard, Log2),                                /* place player's piece */
-  printError(Log2).                                                               /* print error (LOG SHOULD ALWAYS BE NONE) */
+  printError(Log2),                                                               /* print error (LOG SHOULD ALWAYS BE NONE) */
+  !.
 
 botCheckPriorityNotLose(Board, Player, PossiblePlays, [_H|T], NewBoard):-         /* if opponent can NOT win */
   botCheckPriorityNotLose(Board, Player, PossiblePlays, T, NewBoard).             /* recursive call */
+
+/**
+* Checks if it's possible to place a piece and make a line of 4
+* @param Board Game Board
+* @param Player player1 or player2
+* @param PossiblePlays List containing the possible plays (pair of coordinates X-Y)
+* @param Iterator List Iterator
+* @param NewBoard New Board
+*/
+botCheckPriorityLine4(Board, Player, PossiblePlays, [], NewBoard):- !.            /* stop condition */
+  /*nextCall(Board, Player, [], NewBoard):-                                       /* check next priority */
+
+botCheckPriorityLine4(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-        /* if can make 4 in line */
+  reverseMap(Q, R, X, Y),                                                         /* get HEX coords */
+  placePiece(Player, Board, Q, R, TempBoard, Log),                                /* place piece */
+  printError(Log),                                                                /* print error (LOG SHOULD ALWAYS BE NONE) */
+  checkNInRow(TempBoard, X, Y, 4, [], _Dir),                              /* check if 4 pieces in a row */
+  NewBoard = TempBoard.                                                           /* return new board */
+
+botCheckPriorityLine4(Board, Player, PossiblePlays, [_H|T], NewBoard):-           /* if can NOT make 4 in line */
+  botCheckPriorityLine4(Board, Player, PossiblePlays, T, NewBoard).               /* recursive call */

@@ -42,10 +42,10 @@ yes5Board([
 /* testBoard */
 testBotPlayBoard([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
-[blackPiece, blackPiece, blackPiece, blackPiece, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, whitePiece, emptyCell, emptyCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, emptyCell, emptyCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
