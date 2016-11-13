@@ -45,11 +45,11 @@ testBotPlayBoard([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, whitePiece, whitePiece, emptyCell, emptyCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
-[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
+[blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[blackPiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
 /* test checkPiece board */
 checkPieceBoard([
@@ -122,7 +122,7 @@ testBotPlay:-
   testBotPlayBoard(Board),
   printBoard(Board),
   get_char(_),
-  playBotHardMode(Board, player1, NewBoard),
+  playBotHardMode(Board, player2, NewBoard),
   printBoard(NewBoard).
 
 testOla:-

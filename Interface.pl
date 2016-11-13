@@ -59,21 +59,24 @@ displayChooseWatchMode:-
 * Play against bot easy mode
 */
 ifInputWatchMode(Input):-
-	Input =:= 1.
+	Input =:= 1,
+	gameBotEasyEasy.
 	/*facil vs facil*/
 
 /**
 * Play against bot easy mode
 */
 ifInputWatchMode(Input):-
-	Input =:= 2.
+	Input =:= 2,
+	gameBotEasyHard.
 	/*facil vs dificil*/
 
 /**
 * Play against bot easy mode
 */
 ifInputWatchMode(Input):-
-	Input =:= 3.
+	Input =:= 3,
+	gameBotHardHard.
 	/*dificil vs dificil*/
 
 /**
@@ -87,14 +90,16 @@ waitWatchMode:-
 * Play against bot easy mode
 */
 ifInputPlayMode(Input):-
-	Input =:= 1.
+	Input =:= 1,
+	gameBotEasy.
 	/*jogo facil*/
 
 /**
 * Play against bot hard mode
 */
 ifInputPlayMode(Input):-
-	Input =:= 2.
+	Input =:= 2,
+	gameBotHard.
 	/*jogo dificil*/
 
 /**
@@ -131,7 +136,7 @@ ifInputInicial(Input):-
 ifInputInicial(Input):-
 	Input =:= 4,
 	!, displayRules.
-	
+
 /**
 * Leave
 */
@@ -143,18 +148,14 @@ ifInputInicial(Input):-
 * Wait input on start menu
 */
 waitMenuInicial:-
-	getInt(In), 
+	getInt(In),
 	ifInputInicial(In).
 
 /**
 * Print the game over screen to the terminal
 */
-displayGameOver(Winner):-
+displayGameOver:-
 	write('\n***********************FIM DE JOGO***********************\n\n'),
- 	getPlayer(Winner, NewWinner), 
- 	write(NewWinner),
- 	write(' ganhou o jogo!\n'),
- 	write('\n*********************************************************\n\n'),
  	write('\n Prima enter para voltar ao menu inicial.\n'),
  	get_char(_),
  	displayMenuInicial.

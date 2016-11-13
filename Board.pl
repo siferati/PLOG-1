@@ -3,8 +3,6 @@ Board is a 2D array (9x9!) (list of lists) that should ALWAYS be access like thi
 board[Y][X]
 */
 
-/* TODO pieces disappearing!? */
-
 /* includes */
 :- ensure_loaded('utilities.pl').
 :- use_module(library(lists)).
@@ -260,7 +258,7 @@ printVerticalCoord(LineIndex):-   /* when it's below (or at) the equator */
   write(Coord),
   write(' ').
 
-/** TODO redo this, it's shitty. make printTopCoords printBottomCoords predicate
+/**
 * Prints the coordinates to the terminal
 * @param LineIndex Index of line (either 0 or lastLine)
 * @param Count Counter. Always set to 0 when first call

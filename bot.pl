@@ -6,6 +6,11 @@
 :- ensure_loaded('main.pl').
 :- use_module(library(random)).
 
+
+waitBot:-
+  write('Press Enter for Bot to play!'),
+  get_char(_).
+
 /**
 * Finds all possible plays for given player
 * @param Board Game Board
