@@ -97,7 +97,7 @@ game(Player, Board):-
   printError(Log),                                    /* handle errors */
   gameIsRunning(NewBoard),                            /* check if game is over */
   switchPlayer(Player, NewPlayer, Log),               /* switch player turn */
-  !, game(NewPlayer, NewBoard).                          /* loop */
+  !, game(NewPlayer, NewBoard).                       /* loop */
 
 /** TODO perguntar se o 2º jogar quer trocar com o 1º, na primeira jogada
 * Interface to start the game
@@ -108,7 +108,7 @@ game:-
   \+ game(player1, Board),                      /* start game loop (game fails once it's game over) */
   printGameOver.                                /* print end game screen */
 
-/** TODO needs checking on game over... cant figure out why it bugs
+/**
 * Test function for debugging
 */
 game(Board):-

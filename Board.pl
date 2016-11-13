@@ -454,21 +454,19 @@ checkNInRow(Board, XPiece, YPiece, N, Line, Dir):-
 * @param N Number of pieces in a row required to win
 */
 gameIsRunning(Board, XLast, YLast, XLast, YLast, N):-         /* stop condition (call for last cell of board) */
-  !,
   \+checkNInRow(Board, XLast, YLast, N, [], _Dir),            /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
   !.
 
-/* TODO figure out this stupid ass bug and remove all unneeded cuts! */
 gameIsRunning(Board, XLast, YPiece, XLast, YLast, N):-        /* move to next line */
   YPiece =< YLast,                                            /* make sure YPiece is valid */
   NewYPiece is YPiece + 1,                                    /* prepare next ite */
-  !, gameIsRunning(Board, 0, NewYPiece, XLast, YLast, N), !.        /* loop */
+  gameIsRunning(Board, 0, NewYPiece, XLast, YLast, N), !.     /* loop */
 
 gameIsRunning(Board, XPiece, YPiece, XLast, YLast, N):-          /* main loop */
   XPiece =< XLast, YPiece =< YLast,                              /* make sure XPiece and YPiece are valid */
-  !, \+checkNInRow(Board, XPiece, YPiece, N, [], _Dir),          /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
+  \+checkNInRow(Board, XPiece, YPiece, N, [], _Dir),             /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
   NewXPiece is XPiece + 1,                                       /* move to next piece */
-  !, gameIsRunning(Board, NewXPiece, YPiece, XLast, YLast, N), !.   /* loop */
+  gameIsRunning(Board, NewXPiece, YPiece, XLast, YLast, N), !.   /* loop */
 
 /**
 * Interface for gameIsRunning.
