@@ -43,9 +43,17 @@ readCoords(Q, R):-
 
 /**
 * Checks if Coord is positive or negative (cause of get_char problems (reading - ))
+* after checking if Coord is 'e'
 * @param Minus Char read from terminal
 * @param Coord Real value of Coord is returned
 */
+
+getCoord(Minus, Coord):-      /* Coord is negative */
+  getCode(ASCICoord),         /* get Coord ASCI Code (ignoring \n) */
+  ASCICoord =:= 
+
+  !.
+
 getCoord(Minus, Coord):-      /* Coord is negative */
   minus(Minus),               /* if there was a minus signal */
   getCode(ASCICoord),         /* get Coord ASCI Code (ignoring \n) */
@@ -71,11 +79,6 @@ processInput(Player, Q, R):-
   write('Insert Piece (Q-R):\n'),
   readCoords(Q, R).
 
-/** TODO game over screen
-* Prints the game over screen to the terminal
-*/
-printGameOver:-
-  write('Game Over\n').
 
 /*
 while (gameIsRunning)

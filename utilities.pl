@@ -49,6 +49,7 @@ getCode(Input):-
 */
 getInt(Input):-
   get_code(Char),         /* read asci code */
+  get_code(_),
   Input is Char - 48.     /* input = char - '0' */
 
 /*
