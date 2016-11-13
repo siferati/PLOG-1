@@ -7,6 +7,7 @@ board[Y][X]
 
 /* includes */
 :- ensure_loaded('utilities.pl').
+:- use_module(library(lists)).
 
 /* Board radius N = max(abs(x), abs(z)) = 4  */
 boardRadius(4).
@@ -26,13 +27,13 @@ map(Q, R, X, Y):-
   Y is R + N,
   X is Q + N + min(0, R).
 
-  /**
-  * Array to hexagonal coordinates mapping: array[R + N][Q + N + min(0, R)], N = board radius
-  * @param Q Hexagonal coordinate (SW - NE)
-  * @param R Hexagonal coordinate (N - S)
-  * @param X Array coordinate (columns)
-  * @param Y Array coordinate (rows)
-  */
+/**
+* Array to hexagonal coordinates mapping: array[R + N][Q + N + min(0, R)], N = board radius
+* @param Q Hexagonal coordinate (SW - NE)
+* @param R Hexagonal coordinate (N - S)
+* @param X Array coordinate (columns)
+* @param Y Array coordinate (rows)
+*/
 reverseMap(Q, R, X, Y):-
   boardRadius(N), /* get board radius and store it in variable N */
   R is Y - N,
@@ -408,6 +409,45 @@ getAdjacent(QPiece, RPiece, QAdj, RPiece, 4):- QAdj is QPiece + 1.
 getAdjacent(QPiece, RPiece, QAdj, RAdj, 5):- QAdj is QPiece + 1, RAdj is RPiece - 1.
 
 /**
+* Check if there is an emptyCell adjacent to Piece
+* @param Board Game Board
+* @param QPiece Hexagonal coordinate of the piece
+* @param RPiece Hexagonal coordinate of the piece
+*/
+checkEmptyAdjacent(Board, QPiece, RPiece):-
+  getAdjacent(QPiece, RPiece, QAdj, RAdj, _),     /* get Adj */
+  map(QAdj, RAdj, XAdj, YAdj),                    /* get array coordinates of the adjacent piece */
+  find(Board, XAdj, YAdj, Adj),                   /* get adjacent cell */
+  Adj = emptyCell.                                /* check if it's not empty or null cell */
+
+/**
+*
+* @param List List containig the adj found
+*/
+getSameColorAdj(Board, QPiece, RPiece, Color, List):-
+  getAdjacent(QPiece, RPiece, QAdj0, RAdj0, 0),
+  getAdjacent(QPiece, RPiece, QAdj1, RAdj1, 1),
+  getAdjacent(QPiece, RPiece, QAdj2, RAdj2, 2),
+  getAdjacent(QPiece, RPiece, QAdj3, RAdj3, 3),
+  getAdjacent(QPiece, RPiece, QAdj4, RAdj4, 4),
+  getAdjacent(QPiece, RPiece, QAdj5, RAdj5, 5),
+  AuxList = [QAdj0-RAdj0, QAdj1-RAdj1, QAdj2-RAdj2, QAdj3-RAdj3, QAdj4-RAdj4, QAdj5-RAdj5],
+  deleteDifColorAdj(Board, Color, List, AuxList, AuxList).
+
+deleteDifColorAdj(_, _, List, AuxList, []):-            /* stop condition */
+  List = AuxList.
+
+deleteDifColorAdj(Board, Color, List, AuxList, [QAdj-RAdj|T]):- /* if same color, delete it */
+  map(QAdj, RAdj, XAdj, YAdj),                                  /* get array coordinates of the adjacent piece */
+  find(Board, XAdj, YAdj, Adj),                                 /* get adjacent cell */
+  Adj \= Color,                                                 /* delete if different color */
+  delete(AuxList, QAdj-RAdj, NewAuxList),                       /* delete element */
+  deleteDifColorAdj(Board, Color, List, NewAuxList, T).         /* recursive call */
+
+deleteDifColorAdj(Board, Color, List, AuxList, [_H|T]):-        /* if different color (dont delete, just iterate to next) */
+  deleteDifColorAdj(Board, Color, List, AuxList, T).            /* recursive call */
+
+/**
 * Checks if there are N pieces of the same color in a row.
 * @param Board Game Board
 * @param XPiece Array Coordinate of piece
@@ -454,21 +494,20 @@ checkNInRow(Board, XPiece, YPiece, N, Line, Dir):-
 * @param N Number of pieces in a row required to win
 */
 gameIsRunning(Board, XLast, YLast, XLast, YLast, N):-         /* stop condition (call for last cell of board) */
-  !,
   \+checkNInRow(Board, XLast, YLast, N, [], _Dir),            /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
   !.
 
-/* TODO figure out this stupid ass bug and remove all unneeded cuts! */
 gameIsRunning(Board, XLast, YPiece, XLast, YLast, N):-        /* move to next line */
   YPiece =< YLast,                                            /* make sure YPiece is valid */
+  \+checkNInRow(Board, XLast, YPiece, N, [], _Dir),           /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
   NewYPiece is YPiece + 1,                                    /* prepare next ite */
-  !, gameIsRunning(Board, 0, NewYPiece, XLast, YLast, N), !.        /* loop */
+  gameIsRunning(Board, 0, NewYPiece, XLast, YLast, N), !.     /* loop */
 
 gameIsRunning(Board, XPiece, YPiece, XLast, YLast, N):-          /* main loop */
   XPiece =< XLast, YPiece =< YLast,                              /* make sure XPiece and YPiece are valid */
-  !, \+checkNInRow(Board, XPiece, YPiece, N, [], _Dir),          /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
+  \+checkNInRow(Board, XPiece, YPiece, N, [], _Dir),             /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
   NewXPiece is XPiece + 1,                                       /* move to next piece */
-  !, gameIsRunning(Board, NewXPiece, YPiece, XLast, YLast, N), !.   /* loop */
+  gameIsRunning(Board, NewXPiece, YPiece, XLast, YLast, N), !.   /* loop */
 
 /**
 * Interface for gameIsRunning.
@@ -490,7 +529,7 @@ gameIsRunning(Board):-
 * @param YPiece Array Coordinate of piece
 * @param List List containing the pieces to be removed.
 */
-checkPiece(Board, XPiece, YPiece, List):-                 /* main loop */
+checkPiece2(Board, XPiece, YPiece, List):-                 /* main loop */
   boardWidth(Width), boardHeight(Height),                 /* get board width and height */
   XPiece >= 0, XPiece < Width,                            /* make sure X is valid */
   YPiece >= 0, YPiece < Height,                           /* make sure Y is valid */
@@ -503,9 +542,9 @@ checkPiece(Board, XPiece, YPiece, List):-                 /* main loop */
   piece(Adj),                                             /* check if it's not empty or null cell */
   Piece = Adj,                                            /* check if both pieces are the same color */
   \+ memberchk(QAdj-RAdj, List),                          /* check if Adj is not already part of List */
-  checkPiece(Board, XAdj, YAdj, [QAdj-RAdj|List]).        /* recursive call */
+  checkPiece2(Board, XAdj, YAdj, [QPiece-RPiece|List]).    /* recursive call */
 
-checkPiece(Board, XPiece, YPiece, _List):-                 /* if Piece doesn't have any Adj of same color */
+checkPiece2(Board, XPiece, YPiece, _List):-                /* if Piece doesn't have any Adj of same color */
   boardWidth(Width), boardHeight(Height),                 /* get board width and height */
   XPiece >= 0, XPiece < Width,                            /* make sure X is valid */
   YPiece >= 0, YPiece < Height,                           /* make sure Y is valid */
@@ -516,6 +555,18 @@ checkPiece(Board, XPiece, YPiece, _List):-                 /* if Piece doesn't h
   map(QAdj, RAdj, XAdj, YAdj),                            /* get array coordinates of the adjacent piece */
   find(Board, XAdj, YAdj, Adj),                           /* get adjacent cell */
   Adj = emptyCell.                                        /* check if it's emtpyCell (otherwise fail) */
+
+/* -----------------------------------------------*/
+
+checkPiece(Board, XPiece, YPiece, _List):-
+  boardWidth(Width), boardHeight(Height),                 /* get board width and height */
+  XPiece >= 0, XPiece < Width,                            /* make sure X is valid */
+  YPiece >= 0, YPiece < Height,                           /* make sure Y is valid */
+  find(Board, XPiece, YPiece, Piece),                     /* get piece */
+  piece(Piece),                                           /* check if it's not empty or null cell */
+  reverseMap(QPiece, RPiece, XPiece, YPiece),             /* get hexagonal coordinates of Piece */
+  getAdjacent(QPiece, RPiece, _QAdj, _RAdj, _).             /* get an adjacent piece */
+
 
 /*checkPiece(Board, XPiece, YPiece, List):-                 /* if Piece doesn't have any Adj of same color */
 
