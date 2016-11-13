@@ -27,13 +27,13 @@ map(Q, R, X, Y):-
   Y is R + N,
   X is Q + N + min(0, R).
 
-  /**
-  * Array to hexagonal coordinates mapping: array[R + N][Q + N + min(0, R)], N = board radius
-  * @param Q Hexagonal coordinate (SW - NE)
-  * @param R Hexagonal coordinate (N - S)
-  * @param X Array coordinate (columns)
-  * @param Y Array coordinate (rows)
-  */
+/**
+* Array to hexagonal coordinates mapping: array[R + N][Q + N + min(0, R)], N = board radius
+* @param Q Hexagonal coordinate (SW - NE)
+* @param R Hexagonal coordinate (N - S)
+* @param X Array coordinate (columns)
+* @param Y Array coordinate (rows)
+*/
 reverseMap(Q, R, X, Y):-
   boardRadius(N), /* get board radius and store it in variable N */
   R is Y - N,
@@ -499,6 +499,7 @@ gameIsRunning(Board, XLast, YLast, XLast, YLast, N):-         /* stop condition 
 
 gameIsRunning(Board, XLast, YPiece, XLast, YLast, N):-        /* move to next line */
   YPiece =< YLast,                                            /* make sure YPiece is valid */
+  \+checkNInRow(Board, XLast, YPiece, N, [], _Dir),           /* check if there are N pieces in a row and negate it's result. If there are N pieces in a row, then gameIsRunning fails (since game is over) */
   NewYPiece is YPiece + 1,                                    /* prepare next ite */
   gameIsRunning(Board, 0, NewYPiece, XLast, YLast, N), !.     /* loop */
 

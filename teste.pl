@@ -1,6 +1,7 @@
 :- ensure_loaded('Board.pl').
 :- ensure_loaded('utilities.pl').
 :- ensure_loaded('main.pl').
+:- ensure_loaded('bot.pl').
 
 /* test board */
 no5Board([
@@ -37,6 +38,18 @@ yes5Board([
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
 [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
+
+/* testBoard */
+testBotPlayBoard([
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[emptyCell, emptyCell, emptyCell, blackPiece, whitePiece, whitePiece, whitePiece, whitePiece, emptyCell],
+[whitePiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell],
+[whitePiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell],
+[whitePiece, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell],
+[whitePiece, emptyCell, emptyCell, emptyCell, emptyCell, nullCell, nullCell, nullCell, nullCell]]).
 
 /* test checkPiece board */
 checkPieceBoard([
@@ -100,6 +113,21 @@ testGetAdj:-
 testGameOver:-
   yes5Board(Board),
   game(Board).
+
+ola(maria, joao).
+ola(jose, martins).
+ola(joana, castro).
+
+testBotPlay:-
+  testBotPlayBoard(Board),
+  printBoard(Board),
+  get_char(_),
+  playBotHardMode(Board, player1, NewBoard),
+  printBoard(NewBoard).
+
+testOla:-
+  findall(X-Y, ola(X, Y), Lista),
+  print(Lista).
 
 /* Q: -2. R: 3.
 test:-
