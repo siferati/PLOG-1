@@ -3,6 +3,7 @@
 /* includes */
 :- ensure_loaded('Board.pl').
 :- ensure_loaded('utilities.pl').
+:- ensure_loaded('main.pl').
 :- use_module(library(random)).
 
 /**
@@ -114,24 +115,49 @@ playBotHardMode(Board, Player, NewBoard):-
 * @param NewBoard New Board
 */
 botHardMode(Board, Player, PossiblePlays, NewBoard):-
-  botCheckPriorityWin(Board, Player, PossiblePlays, NewBoard).
+  botCheckPriorityWin(Board, Player, PossiblePlays, PossiblePlays, NewBoard).
 
 /**
 * Checks if it's possible to win at this moment
 * @param Board Game Board
 * @param Player player1 or player2
 * @param PossiblePlays List containing the possible plays (pair of coordinates X-Y)
+* @param Iterator List Iterator
 * @param NewBoard New Board
 */
-botCheckPriorityWin(Board, Player, [], NewBoard):- !.     /* stop condition */
-  /*nextCall(Board, Player, [], NewBoard):-               /* check next priority */
+botCheckPriorityWin(Board, Player, PossiblePlays, [], NewBoard):-                 /* stop condition */
+  botCheckPriorityNotLose(Board, Player, PossiblePlays, PossiblePlays, NewBoard), /* check next priority */
+  !.
 
-botCheckPriorityWin(Board, Player, [X-Y|_T], NewBoard):-  /* if it's possible to win */
-  reverseMap(Q, R, X, Y),                                 /* get HEX coords */
-  placePiece(Player, Board, Q, R, TempBoard, Log),        /* place piece */
-  printError(Log),                                        /* print error (LOG SHOULD ALWAYS BE NONE!) */
-  \+ gameIsRunning(TempBoard),                            /* check game over */
-  NewBoard = TempBoard.                                   /* return new board */
+botCheckPriorityWin(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-          /* if it's possible to win */
+  reverseMap(Q, R, X, Y),                                                         /* get HEX coords */
+  placePiece(Player, Board, Q, R, TempBoard, Log),                                /* place piece */
+  printError(Log),                                                                /* print error (LOG SHOULD ALWAYS BE NONE) */
+  \+ gameIsRunning(TempBoard),                                                    /* check game over */
+  NewBoard = TempBoard.                                                           /* return new board */
 
-botCheckPriorityWin(Board, Player, [_H|T], NewBoard):-   /* if it's NOT possible to win */
-  botCheckPriorityWin(Board, Player, T, NewBoard).        /* recursive call */
+botCheckPriorityWin(Board, Player, PossiblePlays, [_H|T], NewBoard):-             /* if it's NOT possible to win */
+  botCheckPriorityWin(Board, Player, PossiblePlays, T, NewBoard).                 /* recursive call */
+
+/**
+* Checks if the oponent can win (and stops him!)
+* @param Board Game Board
+* @param Player player1 or player2
+* @param PossiblePlays List containing the possible plays (pair of coordinates X-Y)
+* @param Iterator List Iterator
+* @param NewBoard New Board
+*/
+botCheckPriorityNotLose(Board, Player, PossiblePlays, [], NewBoard):- !.          /* stop condition */
+  /*nextCall(Board, Player, [], NewBoard):-                                       /* check next priority */
+
+botCheckPriorityNotLose(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-      /* if opponent can win */
+  switchPlayer(Player, Opponent, none),                                           /* switch to opponent's POV */
+  reverseMap(Q, R, X, Y),                                                         /* get HEX coords */
+  placePiece(Opponent, Board, Q, R, TempBoard, Log),                              /* place oponnent's piece */
+  printError(Log),                                                                /* print error (LOG SHOULD ALWAYS BE NONE) */
+  \+ gameIsRunning(TempBoard),                                                    /* check game over */
+  placePiece(Player, Board, Q, R, NewBoard, Log2),                                /* place player's piece */
+  printError(Log2).                                                               /* print error (LOG SHOULD ALWAYS BE NONE) */
+
+botCheckPriorityNotLose(Board, Player, PossiblePlays, [_H|T], NewBoard):-         /* if opponent can NOT win */
+  botCheckPriorityNotLose(Board, Player, PossiblePlays, T, NewBoard).             /* recursive call */
