@@ -173,15 +173,63 @@ botCheckPriorityNotLose(Board, Player, PossiblePlays, [_H|T], NewBoard):-       
 * @param Iterator List Iterator
 * @param NewBoard New Board
 */
-botCheckPriorityLine4(Board, Player, PossiblePlays, [], NewBoard):- !.            /* stop condition */
-  /*nextCall(Board, Player, [], NewBoard):-                                       /* check next priority */
+botCheckPriorityLine4(Board, Player, PossiblePlays, [], NewBoard):-               /* stop condition */
+  botCheckPriorityLine3(Board, Player, PossiblePlays, PossiblePlays, NewBoard),   /* check next priority */
+  !.
 
 botCheckPriorityLine4(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-        /* if can make 4 in line */
   reverseMap(Q, R, X, Y),                                                         /* get HEX coords */
   placePiece(Player, Board, Q, R, TempBoard, Log),                                /* place piece */
   printError(Log),                                                                /* print error (LOG SHOULD ALWAYS BE NONE) */
-  checkNInRow(TempBoard, X, Y, 4, [], _Dir),                              /* check if 4 pieces in a row */
-  NewBoard = TempBoard.                                                           /* return new board */
+  checkNInRow(TempBoard, X, Y, 4, [], _Dir),                                      /* check if 4 pieces in a row */
+  NewBoard = TempBoard,                                                           /* return new board */
+  !.
 
 botCheckPriorityLine4(Board, Player, PossiblePlays, [_H|T], NewBoard):-           /* if can NOT make 4 in line */
   botCheckPriorityLine4(Board, Player, PossiblePlays, T, NewBoard).               /* recursive call */
+
+/**
+* Checks if it's possible to place a piece and make a line of 3
+* @param Board Game Board
+* @param Player player1 or player2
+* @param PossiblePlays List containing the possible plays (pair of coordinates X-Y)
+* @param Iterator List Iterator
+* @param NewBoard New Board
+*/
+botCheckPriorityLine3(Board, Player, PossiblePlays, [], NewBoard):-               /* stop condition */
+  botCheckPriorityLine2(Board, Player, PossiblePlays, PossiblePlays, NewBoard),   /* check next priority */
+  !.
+
+botCheckPriorityLine3(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-        /* if can make 3 in line */
+  reverseMap(Q, R, X, Y),                                                         /* get HEX coords */
+  placePiece(Player, Board, Q, R, TempBoard, Log),                                /* place piece */
+  printError(Log),                                                                /* print error (LOG SHOULD ALWAYS BE NONE) */
+  checkNInRow(TempBoard, X, Y, 3, [], _Dir),                                      /* check if 3 pieces in a row */
+  NewBoard = TempBoard,                                                           /* return new board */
+  !.
+
+botCheckPriorityLine3(Board, Player, PossiblePlays, [_H|T], NewBoard):-           /* if can NOT make 3 in line */
+  botCheckPriorityLine3(Board, Player, PossiblePlays, T, NewBoard).               /* recursive call */
+
+/**
+* Checks if it's possible to place a piece and make a line of 2
+* @param Board Game Board
+* @param Player player1 or player2
+* @param PossiblePlays List containing the possible plays (pair of coordinates X-Y)
+* @param Iterator List Iterator
+* @param NewBoard New Board
+*/
+botCheckPriorityLine2(Board, Player, PossiblePlays, [], NewBoard):-               /* stop condition */
+  botEasyMode(Board, Player, PossiblePlays, NewBoard),                            /* check next priority (move random) */
+  !.
+
+botCheckPriorityLine2(Board, Player, _PossiblePlays, [X-Y|_T], NewBoard):-        /* if can make 2 in line */
+  reverseMap(Q, R, X, Y),                                                         /* get HEX coords */
+  placePiece(Player, Board, Q, R, TempBoard, Log),                                /* place piece */
+  printError(Log),                                                                /* print error (LOG SHOULD ALWAYS BE NONE) */
+  checkNInRow(TempBoard, X, Y, 2, [], _Dir),                                      /* check if 2 pieces in a row */
+  NewBoard = TempBoard,                                                           /* return new board */
+  !.
+
+botCheckPriorityLine2(Board, Player, PossiblePlays, [_H|T], NewBoard):-           /* if can NOT make 2 in line */
+  botCheckPriorityLine2(Board, Player, PossiblePlays, T, NewBoard).               /* recursive call */
